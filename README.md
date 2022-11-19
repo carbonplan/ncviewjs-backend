@@ -5,12 +5,10 @@
 
 # Rechunking Timing
 
-
 [![CI](https://github.com/carbonplan/python-project-template/actions/workflows/main.yaml/badge.svg)](https://github.com/carbonplan/python-project-template/actions/workflows/main.yaml)
 ![MIT License][]
 
 [mit license]: https://badgen.net/badge/license/MIT/blue
-
 
 ## license
 

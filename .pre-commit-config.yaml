@@ -9,17 +9,17 @@ repos:
       - id: end-of-file-fixer
       - id: check-docstring-first
       - id: check-json
-        exclude: 'asv_bench/asv.conf.json'
       - id: check-yaml
+      - id: double-quote-string-fixer
       - id: debug-statements
       - id: mixed-line-ending
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.2.0
+    rev: v3.2.2
     hooks:
       - id: pyupgrade
         args:
-          - '--py38-plus'
+          - '--py310-plus'
 
   - repo: https://github.com/psf/black
     rev: 22.10.0
@@ -28,7 +28,7 @@ repos:
       - id: black-jupyter
 
   - repo: https://github.com/keewis/blackdoc
-    rev: v0.3.7
+    rev: v0.3.8
     hooks:
       - id: blackdoc
 
