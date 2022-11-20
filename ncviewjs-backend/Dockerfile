@@ -59,5 +59,9 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER . .
 COPY --chown=$MAMBA_USER:$MAMBA_USER ./entrypoint.sh .
 RUN chmod +x /usr/src/app/entrypoint.sh
 
+# modify the PATH at build-time to approximate an activated environment during docker exec
+# warning - not a prefered method, but it works
+ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
+
 # run entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "/usr/src/app/entrypoint.sh"]

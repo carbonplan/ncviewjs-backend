@@ -45,7 +45,7 @@ src_folder = "./."
 To create the first migration, run the following command:
 
 ```bash
-docker-compose exec web bash -it -c "aerich init-db"
+docker-compose exec web aerich init-db
 ```
 
 ```console
@@ -82,5 +82,5 @@ web_dev=# \dt
 To run the tests, run the following command:
 
 ```bash
-docker-compose exec web bash -it -c "python -m pytest -v"
+docker-compose exec web python -m pytest -v
 ```

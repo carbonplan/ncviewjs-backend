@@ -38,8 +38,8 @@ jobs:
 
       - name: Database migration
         run: |
-          docker-compose exec web bash -it -c "aerich init-db"
+          docker-compose exec web aerich init-db
 
       - name: Run tests
         run: |
-          docker-compose exec web bash -it -c "python -m pytest -v"
+          docker-compose exec web python -m pytest -v
