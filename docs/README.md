@@ -30,7 +30,7 @@ This will start the backend on port 8004. You can now access the backend at <htt
 The backend uses [Aerich](https://github.com/tortoise/aerich) for database migrations. To create a new migration, run the following command:
 
 ```bash
-docker-compose exec web bash -i -c "aerich init -t app.db.TORTOISE_ORM"
+docker-compose exec web bash -it -c "aerich init -t app.db.TORTOISE_ORM"
 ```
 
 This will create a config file called `ncviewjs-backend/pyproject.toml`:
@@ -45,7 +45,7 @@ src_folder = "./."
 To create the first migration, run the following command:
 
 ```bash
-docker-compose exec web bash -i -c "aerich init-db"
+docker-compose exec web bash -it -c "aerich init-db"
 ```
 
 ```console
@@ -82,5 +82,5 @@ web_dev=# \dt
 To run the tests, run the following command:
 
 ```bash
-docker-compose exec web bash -i -c "python -m pytest -v"
+docker-compose exec web bash -it -c "python -m pytest -v"
 ```
