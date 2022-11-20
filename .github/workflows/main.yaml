@@ -22,3 +22,22 @@ jobs:
         with:
           python-version: '3.10'
       - uses: pre-commit/action@v3.0.0
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build docker image
+        run: |
+          docker-compose up -d --build
+
+      - name: Database migration
+        run: |
+          docker-compose exec web bash -i -c "aerich init-db"
+
+      - name: Run tests
+        run: |
+          docker-compose exec web bash -i -c "python -m pytest -v"
