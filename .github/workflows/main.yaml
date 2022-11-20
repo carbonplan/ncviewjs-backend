@@ -37,9 +37,11 @@ jobs:
           docker-compose up -d --build
 
       - name: Database migration
+        shell: 'script -q -e -c "bash {0}"'
         run: |
           docker-compose exec web aerich init-db
 
       - name: Run tests
+        shell: 'script -q -e -c "bash {0}"'
         run: |
           docker-compose exec web python -m pytest -v
