@@ -74,4 +74,5 @@ web_dev=# \dt
 (2 rows)
 ```
 
-> Note: The `aerich` documentation on database migration resides here: <https://tortoise-orm.readthedocs.io/en/latest/migration.html>
+> **Note:**
+> The `aerich` documentation on database migration resides here: <https://tortoise-orm.readthedocs.io/en/latest/migration.html>
