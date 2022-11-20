@@ -3,10 +3,15 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python=3.10
-  - fastapi>=0.87.0
-  - httpx >=0.23.0
-  - uvicorn
-  - gunicorn
+  - asyncpg>=0.27
   - black
+  - fastapi>=0.87.0
+  - gunicorn
+  - httpx >=0.23.0
   - pytest
+  - python=3.10
+  - sqlmodel >= 0.0.8
+  - uvicorn
+  - tortoise-orm >= 0.19.2
+  - pip:
+      - aerich

@@ -16,3 +16,10 @@ ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
 # copy project
 COPY --chown=$MAMBA_USER:$MAMBA_USER . .
+
+# add entrypoint.sh
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./entrypoint.sh .
+RUN chmod +x /usr/src/ncviewjs-backend/entrypoint.sh
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/ncviewjs-backend/entrypoint.sh"]
