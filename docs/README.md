@@ -23,4 +23,4 @@ Once the image is built, you can start the backend:
 docker-compose up
 ```
 
-This will start the backend on port 8004. You can now access the backend at http://localhost:8004.
+This will start the backend on port 8004. You can now access the backend at <http://localhost:8004>.
