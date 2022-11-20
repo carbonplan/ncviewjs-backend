@@ -2,11 +2,12 @@
 FROM mambaorg/micromamba:1.0.0 as micromamba
 
 # This is the image we are going add micromamba to:
-FROM python:3.10.8-slim-buster
+FROM debian:bullseye-slim
+
 
 # install system dependencies
 RUN apt-get update \
-    && apt-get -y install netcat gcc \
+    && apt-get -y install netcat ca-certificates \
     && apt-get clean
 
 ARG MAMBA_USER=mamba
