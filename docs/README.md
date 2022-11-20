@@ -76,3 +76,11 @@ web_dev=# \dt
 
 > **Note**
 > The `aerich` documentation on database migration resides here: <https://tortoise-orm.readthedocs.io/en/latest/migration.html>
+
+## Running tests
+
+To run the tests, run the following command:
+
+```bash
+docker-compose exec web bash -i -c "python -m pytest -v"
+```

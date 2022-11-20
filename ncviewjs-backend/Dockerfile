@@ -43,7 +43,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # set working directory
-WORKDIR /usr/src/ncviewjs-backend
+WORKDIR /usr/src/app
 
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER ./envs/environment.yml /tmp/environment.yml
@@ -57,7 +57,7 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER . .
 
 # add entrypoint.sh
 COPY --chown=$MAMBA_USER:$MAMBA_USER ./entrypoint.sh .
-RUN chmod +x /usr/src/ncviewjs-backend/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "/usr/src/ncviewjs-backend/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "/usr/src/app/entrypoint.sh"]
