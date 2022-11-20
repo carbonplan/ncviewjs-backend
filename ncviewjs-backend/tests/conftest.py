@@ -1,10 +1,10 @@
 import os
 
 import pytest
-from app.config import Settings, get_settings
 from fastapi.testclient import TestClient
 
 from app import main
+from app.config import Settings, get_settings
 
 
 def get_settings_override():
