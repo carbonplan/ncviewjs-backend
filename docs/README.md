@@ -49,6 +49,10 @@ docker-compose exec web aerich init-db
 ```
 
 ```console
+docker-compose exec web aerich upgrade
+```
+
+```console
 Success create app migrate location migrations/models
 Success generate schema for app "models"
 ```

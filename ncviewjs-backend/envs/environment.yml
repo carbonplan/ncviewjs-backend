@@ -14,9 +14,9 @@ dependencies:
   - pytest-asyncio
   - pytest-cov
   - pytest-reportlog
-  - python=3.10
+  - python=3.10.6
   - sqlmodel >= 0.0.8
-  - tortoise-orm >= 0.19.2
+  - tortoise-orm
   - uvicorn
   - tomli
   - pip:
