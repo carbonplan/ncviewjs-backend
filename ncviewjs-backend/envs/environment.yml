@@ -1,0 +1,23 @@
+name: ncviewjs
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - asyncpg>=0.27
+  - black
+  - dictdiffer >= 0.9.0
+  - fastapi>=0.87.0
+  - gunicorn
+  - httpx >=0.23.0
+  - pip
+  - pytest
+  - pytest-asyncio
+  - pytest-cov
+  - pytest-reportlog
+  - python=3.10
+  - sqlmodel >= 0.0.8
+  - tortoise-orm >= 0.19.2
+  - uvicorn
+  - tomli
+  - pip:
+      - aerich
