@@ -28,15 +28,10 @@ COPY --from=micromamba /usr/local/bin/_dockerfile_setup_root_prefix.sh /usr/loca
 RUN /usr/local/bin/_dockerfile_initialize_user_accounts.sh && \
     /usr/local/bin/_dockerfile_setup_root_prefix.sh
 
-# USER $MAMBA_USER
-
 SHELL ["/usr/local/bin/_dockerfile_shell.sh"]
-
 
 # You can modify the CMD statement as needed....
 CMD ["/bin/bash"]
-
-
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -44,7 +39,6 @@ ENV PYTHONUNBUFFERED 1
 
 # set working directory
 WORKDIR /code/app
-
 
 COPY ./envs/environment.yml /tmp/environment.yml
 RUN micromamba install -y -n base -f /tmp/environment.yml
@@ -61,7 +55,6 @@ RUN chmod +x /code/app/entrypoint.sh
 ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
 
 # copy project
-#COPY --chown=$MAMBA_USER:$MAMBA_USER . .
 COPY . .
 
 # run entrypoint.sh
