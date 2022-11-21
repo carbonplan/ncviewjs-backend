@@ -48,22 +48,23 @@ jobs:
         shell: 'script -q -e -c "bash {0}"'
         run: |
           docker-compose exec web python -m pytest
+          ls -ltrh
 
-      # - name: Open or update issue on failure
-      #   if: |
-      #     failure()
-      #     && github.event_name == 'schedule'
-      #     && github.repository_owner == 'carbonplan'
-      #     && steps.status.outcome == 'failure'
+      - name: Open or update issue on failure
+        if: |
+          failure()
+          && github.event_name == 'schedule'
+          && github.repository_owner == 'carbonplan'
+          && steps.status.outcome == 'failure'
 
-      #   uses: xarray-contrib/issue-from-pytest-log@v1
-      #   with:
-      #     log-path: ./ncviewjs-backend/pytest-log.jsonl
-      #     issue-title: ⚠️ Nightly CI failed ⚠️
-      #     issue-label: nightly
+        uses: xarray-contrib/issue-from-pytest-log@v1
+        with:
+          log-path: ./ncviewjs-backend/pytest-log.jsonl
+          issue-title: ⚠️ Nightly CI failed ⚠️
+          issue-label: nightly
 
-      # - name: Upload code coverage to Codecov
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     files: ./ncviewjs-backend/coverage.xml
-      #     fail_ci_if_error: true
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./ncviewjs-backend/coverage.xml
+          fail_ci_if_error: true
