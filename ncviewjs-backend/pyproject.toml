@@ -20,3 +20,11 @@ profile = "black"
 tortoise_orm = "app.db.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./."
+
+[tool.coverage.run]
+omit = ["tests/*"]
+branch = true
+
+[tool.pytest.ini_options]
+console_output_style = "count"
+addopts = "--cov=./ --cov-report=xml --report-log pytest-log.jsonl --cov-append --cov-report term-missing --verbose"
