@@ -11,7 +11,7 @@ logger = logging.getLogger("uvicorn")
 router = APIRouter()
 
 
-@router.post("/", response_model=StoreSchema, status_code=201)
+@router.post("/", response_model=StoreSchema, status_code=201, summary="Register a new store")
 async def receive(
     payload: StorePayloadSchema, settings: Settings = Depends(get_settings)
 ) -> StoreSchema:
@@ -28,7 +28,7 @@ async def receive(
     return await StoreSchema.from_tortoise_orm(store)
 
 
-@router.get("/", response_model=StoreSchema)
+@router.get("/", response_model=StoreSchema, summary="Get a store")
 async def get_store(url: pydantic.AnyUrl = Query(...)) -> StoreSchema:
     store = await Store.filter(url=url).first()
     if store:

@@ -47,3 +47,14 @@ def test_get_store(test_app_with_db, url):
         "status",
         "rechunked_url",
     }
+
+
+def test_get_store_not_found(test_app_with_db):
+    url = "gs://foo/bar"
+    response = test_app_with_db.get(
+        '/store/',
+        params={"url": url},
+    )
+    assert response.status_code == 404
+    data = response.json()
+    assert f"Store: {url} not found" in data["detail"]
