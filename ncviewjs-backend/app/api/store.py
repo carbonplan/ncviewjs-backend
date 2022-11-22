@@ -1,7 +1,8 @@
 import logging
 
 import pydantic
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import JSONResponse
 
 from app.config import Settings, get_settings
 from app.models.pydantic import Store_Pydantic
@@ -16,24 +17,21 @@ async def receive(url: pydantic.AnyUrl, settings: Settings = Depends(get_setting
 
     store = await Store.filter(url=url).first()
     if store:
-        msg = "Store already exists: "
-        logger.info(f"{msg}{store}")
+        logger.info(f"Store already exists: {store}")
         store_obj = await Store_Pydantic.from_tortoise_orm(store)
     else:
-        msg = "New store added: "
         store = await Store.create(url=url)
         store_obj = await Store_Pydantic.from_tortoise_orm(store)
+        logger.info(f"New store added: {url}")
 
-        logger.info(f"{msg}{url}")
-
-    return {"message": msg, "url": store_obj.url}
+    return JSONResponse(content=store_obj.dict(), status_code=201)
 
 
 @router.get("/store")
 async def get_store(url: pydantic.AnyUrl = Query(...)):
     store = await Store.filter(url=url).first()
     if store:
-        store_obj = await Store_Pydantic.from_tortoise_orm(store)
-        return store_obj
+        return await Store_Pydantic.from_tortoise_orm(store)
+
     else:
-        return {"message": "Store not found"}
+        raise HTTPException(status_code=404, detail=f"Store: {url} not found")
