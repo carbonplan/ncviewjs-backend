@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 
-from app.api import ping
+from app.api import ping, store
 from app.db import init_db
 
 logger = logging.getLogger("uvicorn")
@@ -11,6 +11,7 @@ logger = logging.getLogger("uvicorn")
 def create_application() -> FastAPI:
     application = FastAPI()
     application.include_router(ping.router)
+    application.include_router(store.router, prefix="/store", tags=["store"])
     return application
 
 

@@ -6,10 +6,11 @@ async def upgrade(db: BaseDBAsyncClient) -> str:
         CREATE TABLE IF NOT EXISTS "store" (
     "id" SERIAL NOT NULL PRIMARY KEY,
     "url" VARCHAR(255) NOT NULL UNIQUE,
+    "status" VARCHAR(255),
+    "conclusion" VARCHAR(255),
+    "rechunked_url" VARCHAR(255),
     "registered_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP,
-    "status" VARCHAR(255) NOT NULL  DEFAULT 'queued',
-    "conclusion" VARCHAR(255) NOT NULL,
-    "rechunked_url" VARCHAR(255) NOT NULL
+    "last_accessed_at" TIMESTAMPTZ NOT NULL  DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS "aerich" (
     "id" SERIAL NOT NULL PRIMARY KEY,
