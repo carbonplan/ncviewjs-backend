@@ -9,6 +9,9 @@ class Store(models.Model):
     rechunked_url = fields.CharField(max_length=255, null=True)
     registered_at = fields.DatetimeField(auto_now_add=True)
     last_accessed_at = fields.DatetimeField(auto_now=True)
+    equirectangular = fields.BooleanField(default=True)
+    x_dim_name = fields.CharField(max_length=255, null=True)  # ex, longitude
+    y_dim_name = fields.CharField(max_length=255, null=True)  # ex, latitude
 
     def __str__(self):
         return self.url

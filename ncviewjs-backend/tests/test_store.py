@@ -23,6 +23,9 @@ def test_post_store(test_app_with_db, url):
         "conclusion",
         "status",
         "rechunked_url",
+        "equirectangular",
+        "x_dim_name",
+        "y_dim_name",
     }
 
 
