@@ -24,7 +24,7 @@ async def receive(url: pydantic.AnyUrl, settings: Settings = Depends(get_setting
         store_obj = await Store_Pydantic.from_tortoise_orm(store)
         logger.info(f"New store added: {url}")
 
-    return JSONResponse(content=store_obj.dict(), status_code=201)
+    return JSONResponse(content={'url': store_obj.url}, status_code=201)
 
 
 @router.get("/store")
