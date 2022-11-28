@@ -1,10 +1,12 @@
+import os
+
 import fsspec
 import rechunker
 import xarray as xr
 import zarr
 from prefect import flow, task
 from utils import determine_chunk_size
-import os 
+
 from app.models.pydantic import SanitizedURL
 
 
@@ -25,10 +27,12 @@ def _retrieve_CF_dims(url: str) -> dict:
     T = ds.cf['T'].name
     return {'X': X, 'Y': Y, 'T': T}
 
+
 @task
 def copy_staging_to_production(store_paths: dict):
     transfer_str = f"skyplane cp -r {store_paths['staging_store']} {store_paths['prod_store']}"
     os.system(transfer_str)
+
 
 @task
 def finalize():
