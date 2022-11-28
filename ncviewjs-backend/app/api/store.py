@@ -4,6 +4,7 @@ import pydantic
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.config import Settings, get_settings
+from app.helpers import sanitize_url
 from app.models.pydantic import StorePayloadSchema, StoreSchema
 from app.models.tortoise import Store
 
@@ -16,12 +17,21 @@ async def receive(
     payload: StorePayloadSchema, settings: Settings = Depends(get_settings)
 ) -> StoreSchema:
 
-    store = await Store.filter(url=payload.url).first()
+    # Sanitize the URL
+    sanitized_url = sanitize_url(payload.url)
+
+    store = await Store.filter(md5_id=sanitized_url.md5_id).first()
     if store:
         logger.info(f"Store already exists: {store}")
 
     else:
-        store = Store(url=payload.url)
+        store = Store(
+            url=sanitized_url.url,
+            md5_id=sanitized_url.md5_id,
+            protocol=sanitized_url.protocol,
+            bucket=sanitized_url.bucket,
+            key=sanitized_url.key,
+        )
         await store.save()
         logger.info(f"New store added: {payload.url}")
 
@@ -30,7 +40,11 @@ async def receive(
 
 @router.get("/", response_model=StoreSchema, summary="Get a store")
 async def get_store(url: pydantic.AnyUrl = Query(...)) -> StoreSchema:
-    store = await Store.filter(url=url).first()
+
+    # Sanitize the URL
+    sanitized_url = sanitize_url(url)
+
+    store = await Store.filter(url=sanitized_url.url).first()
     if store:
         return await StoreSchema.from_tortoise_orm(store)
 

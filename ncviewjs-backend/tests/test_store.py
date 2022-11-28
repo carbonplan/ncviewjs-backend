@@ -14,7 +14,7 @@ def test_post_store(test_app_with_db, url):
     )
     assert response.status_code == 201
     data = response.json()
-    assert data["url"] == url
+    assert data["url"] == url.strip("/")
     assert data.keys() == {
         "id",
         "url",
@@ -23,6 +23,10 @@ def test_post_store(test_app_with_db, url):
         "conclusion",
         "status",
         "rechunked_url",
+        "bucket",
+        "key",
+        "protocol",
+        "md5_id",
     }
 
 
@@ -37,7 +41,7 @@ def test_get_store(test_app_with_db, url):
     )
     assert response.status_code == 200
     data = response.json()
-    assert data["url"] == url
+    assert data["url"] == url.strip("/")
     assert data.keys() == {
         "id",
         "url",
@@ -46,6 +50,10 @@ def test_get_store(test_app_with_db, url):
         "conclusion",
         "status",
         "rechunked_url",
+        "md5_id",
+        "protocol",
+        "bucket",
+        "key",
     }
 
 
