@@ -20,7 +20,7 @@ async def receive(
     # Sanitize the URL
     sanitized_url = sanitize_url(payload.url)
 
-    store = await Store.filter(md5_id=sanitized_url.md5_id).first()
+    store = await Store.filter(md5_id=sanitized_url.md5_id, protocol=sanitized_url.protocol).first()
     if store:
         logger.info(f"Store already exists: {store}")
 
@@ -44,7 +44,7 @@ async def get_store(url: pydantic.AnyUrl = Query(...)) -> StoreSchema:
     # Sanitize the URL
     sanitized_url = sanitize_url(url)
 
-    store = await Store.filter(url=sanitized_url.url).first()
+    store = await Store.filter(md5_id=sanitized_url.md5_id, protocol=sanitized_url.protocol).first()
     if store:
         return await StoreSchema.from_tortoise_orm(store)
 
