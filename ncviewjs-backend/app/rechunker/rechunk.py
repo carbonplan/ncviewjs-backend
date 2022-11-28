@@ -15,7 +15,7 @@ def _generate_tgt_tmp_stores(sanitized_url: SanitizedURL, processing_type: str) 
     return {'target_store': tgt_store, 'temp_store': tmp_store}
 
 
-def _retrieve_CF_dims(url: str) -> dict:  # Update this datatype to pydantic model from main
+def _retrieve_CF_dims(url: str) -> dict:
     import cf_xarray  # noqa: F401
 
     ds = xr.open_zarr(url)
@@ -84,13 +84,11 @@ def rechunk_dataset(
     return store_paths['target_store']
 
 
-@flow
+@flow(name="rechunking-flow")
 def rechunk_flow(sanitized_url: SanitizedURL) -> dict:
     store_paths = _generate_tgt_tmp_stores(sanitized_url, processing_type='rechunked')
     cf_dims_dict = _retrieve_CF_dims(sanitized_url.url)
     target_store = rechunk_dataset(
         zarr_store_url=sanitized_url.url, cf_dims_dict=cf_dims_dict, store_paths=store_paths
     )
-
-    ds = xr.open_zarr(target_store)
-    print(ds)
+    return {'target_store': target_store}
