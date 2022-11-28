@@ -3,11 +3,14 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
+  - adlfs
   - asyncpg>=0.27
   - black
+  - dask >= 2022.11.0
   - dictdiffer >= 0.9.0
   - fastapi>=0.87.0
   - fsspec >= 2022.11.0
+  - gcsfs
   - gunicorn
   - httpie
   - httpx >=0.23.0
@@ -17,9 +20,12 @@ dependencies:
   - pytest-cov
   - pytest-reportlog
   - python=3.10
+  - s3fs
   - tomli
   - tortoise-orm
-  - uvicorn
   - universal_pathlib >=0.0.21
+  - uvicorn
+  - xarray >=2022.11.0
+  - zarr >=2.13
   - pip:
       - aerich

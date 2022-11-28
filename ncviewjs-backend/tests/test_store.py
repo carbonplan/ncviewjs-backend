@@ -12,6 +12,22 @@ urls = [
 ]
 
 
+columns = {
+    "id",
+    "url",
+    "last_accessed_at",
+    "registered_at",
+    "conclusion",
+    "status",
+    "rechunked_url",
+    "bucket",
+    "key",
+    "protocol",
+    "md5_id",
+    "error",
+}
+
+
 @pytest.mark.parametrize(
     "url",
     urls,
@@ -24,19 +40,7 @@ def test_post_store(test_app_with_db, url):
     assert response.status_code == 201
     data = response.json()
     assert data["url"] == url.strip("/")
-    assert data.keys() == {
-        "id",
-        "url",
-        "last_accessed_at",
-        "registered_at",
-        "conclusion",
-        "status",
-        "rechunked_url",
-        "bucket",
-        "key",
-        "protocol",
-        "md5_id",
-    }
+    assert data.keys() == columns
 
 
 @pytest.mark.parametrize(
@@ -51,19 +55,7 @@ def test_get_store(test_app_with_db, url):
     assert response.status_code == 200
     data = response.json()
     assert data["url"] == url.strip("/")
-    assert data.keys() == {
-        "id",
-        "url",
-        "last_accessed_at",
-        "registered_at",
-        "conclusion",
-        "status",
-        "rechunked_url",
-        "md5_id",
-        "protocol",
-        "bucket",
-        "key",
-    }
+    assert data.keys() == columns
 
 
 def test_get_store_not_found(test_app_with_db):
