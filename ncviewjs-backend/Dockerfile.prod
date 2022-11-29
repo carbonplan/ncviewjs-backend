@@ -26,9 +26,6 @@ ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
 # add app
 COPY --chown=$MAMBA_USER:$MAMBA_USER . .
 
-# # chown all the files to the app user
-# RUN --chown=$MAMBA_USER:$MAMBA_USER $APP_HOME
-
 
 # run gunicorn
-CMD gunicorn --bind 0.0.0.0:$PORT app.main:app -k uvicorn.workers.UvicornWorker 2
+CMD gunicorn --bind 0.0.0.0:$PORT app.main:app -k uvicorn.workers.UvicornWorker -w 2 -t 300
