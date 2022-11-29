@@ -18,11 +18,9 @@ async def _validate_store(*, store: StoreSchema) -> None:
     try:
         validate_zarr_store(store.url)
     except Exception as exc:
-        store.status = "completed"
-        store.conclusion = "failure"
-        store.error = str(exc)
+        data = dict(status="completed", conclusion="failure", error_message=str(exc))
 
-        await Store.filter(id=store.id).update(**store.dict(exclude_unset=True))
+        await Store.filter(id=store.id).update(**data)
         logger.error(f'Validation of store: {store.url} failed: {store.error}')
 
 
