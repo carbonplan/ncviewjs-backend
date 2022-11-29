@@ -24,7 +24,7 @@ columns = {
     "key",
     "protocol",
     "md5_id",
-    "error",
+    "error_message",
 }
 
 
