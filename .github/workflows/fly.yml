@@ -1,4 +1,4 @@
-name: Fly Deploy
+name: fly
 
 on:
   push:
@@ -18,7 +18,7 @@ env:
 
 jobs:
   deploy:
-    name: Deploy app
+    name: deploy app
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -26,5 +26,4 @@ jobs:
       - name: Deploy
         working-directory: ./ncviewjs-backend
         run: |
-          ls -la
-          flyctl deploy --remote-only .
+          flyctl deploy --remote-only
