@@ -14,7 +14,7 @@ ENV ENVIRONMENT production
 ENV TESTING 0
 
 
-COPY ./envs/environment.yml /tmp/environment.yml
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./envs/environment.yml /tmp/environment.yml
 RUN micromamba install -y -n base -f /tmp/environment.yml
 RUN micromamba clean --all -f -y
 
@@ -24,10 +24,10 @@ RUN micromamba clean --all -f -y
 ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
 
 # add app
-COPY . .
+COPY --chown=$MAMBA_USER:$MAMBA_USER . .
 
-# chown all the files to the app user
-RUN chown -R ${MAMBA_USER}:${MAMBA_USER} $APP_HOME
+# # chown all the files to the app user
+# RUN --chown=$MAMBA_USER:$MAMBA_USER $APP_HOME
 
 
 # run gunicorn
