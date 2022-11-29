@@ -4,7 +4,7 @@ FROM mambaorg/micromamba:1.0.0
 # create the appropriate directories
 ENV MAMBA_USER=mambauser
 ENV APP_HOME=/home/${MAMBA_USER}/web
-RUN mkdir $APP_HOME
+RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
 # set environment variables

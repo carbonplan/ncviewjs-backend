@@ -38,3 +38,6 @@ kill_timeout = 5
   ENVIRONMENT = "production"
   TESTING = "False"
   PORT = "8004"
+
+[deploy]
+  release_command = "bash -l release.sh"
