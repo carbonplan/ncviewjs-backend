@@ -36,7 +36,9 @@ def validate_zarr_store(url: str) -> None:
         with xr.open_dataset(url, engine='zarr', chunks={}, decode_cf=False) as ds:
             validate_dataset_size(ds)
         del ds
-    except OSError as exc:
-        raise UnableToOpenDatasetError(f'Unable to open Zarr store: {url}') from exc
+
     except DatasetTooLargeError as exc:
         raise DatasetTooLargeError(exc) from exc
+
+    except Exception as exc:
+        raise UnableToOpenDatasetError(f'Unable to open Zarr store: {url} due to {exc}') from exc

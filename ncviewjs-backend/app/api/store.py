@@ -21,7 +21,7 @@ async def _validate_store(*, store: StoreSchema) -> None:
         data = dict(status="completed", conclusion="failure", error_message=str(exc))
 
         await Store.filter(id=store.id).update(**data)
-        logger.error(f'Validation of store: {store.url} failed: {store.error}')
+        logger.error(f'Validation of store: {store.url} failed: {exc}')
 
 
 @router.post("/", response_model=StoreSchema, status_code=201, summary="Register a new store")
