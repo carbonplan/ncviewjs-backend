@@ -11,7 +11,7 @@ from app.models.pydantic import SanitizedURL
 
 
 def _generate_tgt_tmp_stores(sanitized_url: SanitizedURL, processing_type: str) -> dict:
-    store_suffix = f"/{processing_type}/{sanitized_url.bucket}/{sanitized_url.key}"
+    store_suffix = f"/{processing_type}/{sanitized_url.key}"
     tmp_store = "s3://carbonplan-data-viewer-staging/tmp/" + store_suffix
     staging_store = "s3://carbonplan-data-viewer-staging" + store_suffix
     prod_store = "s3://carbonplan-data-viewer-production" + store_suffix
@@ -30,7 +30,8 @@ def _retrieve_CF_dims(url: str) -> dict:
 
 @task
 def copy_staging_to_production(store_paths: dict):
-    transfer_str = f"skyplane cp -r {store_paths['staging_store']} {store_paths['prod_store']}"
+    transfer_str = f"skyplane cp -r -y {store_paths['staging_store']} {store_paths['prod_store']}"
+    print(transfer_str)
     os.system(transfer_str)
 
 
@@ -50,7 +51,7 @@ def rechunk_dataset(
     target_size_bytes: int = 5e5,
     max_mem: str = "1000MB",
 ):
-    """_summary_
+    """Rechunks zarr dataset to match chunk schema required by carbonplan web-viewer.
 
     Parameters
     ----------
@@ -108,3 +109,10 @@ def rechunk_flow(sanitized_url: SanitizedURL) -> dict:
     copy_staging_to_production(store_paths)
     finalize()
     return {'production_store': store_paths['prod_store']}
+
+
+# Note: snippet below is for end2end testing
+# from app.helpers import sanitize_url
+# url = "s3://carbonplan-scratch/gpcp_100MB.zarr"
+# sanitized_url = sanitize_url(url)
+# rechunk_flow(sanitized_url)
