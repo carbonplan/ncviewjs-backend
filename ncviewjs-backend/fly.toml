@@ -1,0 +1,8 @@
+app = "ncview-backend"
+
+[build]
+    dockerfile = "Dockerfile.prod"
+
+[env]
+    ENVIRONMENT = "production"
+    TESTING = "False"
