@@ -26,6 +26,4 @@ jobs:
       - name: Deploy
         run: |
           cd ncviewjs-backend
-          pwd
-          ls -la
-          flyctl deploy --remote-only
+          flyctl deploy --remote-only .
