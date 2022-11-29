@@ -67,9 +67,9 @@ docker-compose exec web-db psql -U postgres
 psql (14.6)
 Type "help" for help.
 
-postgres=# \c web_dev
-You are now connected to database "web_dev" as user "postgres".
-web_dev=# \dt
+postgres=# \c ncview_dev
+You are now connected to database "ncview_dev" as user "postgres".
+ncview_dev=# \dt
          List of relations
  Schema |  Name  | Type  |  Owner
 --------+--------+-------+----------

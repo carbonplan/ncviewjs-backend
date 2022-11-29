@@ -1,2 +1,2 @@
-CREATE DATABASE web_dev;
-CREATE DATABASE web_test;
+CREATE DATABASE ncview_dev;
+CREATE DATABASE ncview_test;

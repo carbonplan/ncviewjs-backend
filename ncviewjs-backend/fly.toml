@@ -1,0 +1,43 @@
+# fly.toml file generated for ncview-backend on 2022-11-28T21:14:01-07:00
+
+app = "ncview-backend"
+
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+[experimental]
+  allowed_public_ports = []
+  auto_rollback = true
+
+[[services]]
+  internal_port = 8004
+  protocol = "tcp"
+
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = "80"
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = "443"
+
+  [[services.tcp_checks]]
+    interval = 10000
+    timeout = 2000
+
+
+
+[build]
+  dockerfile = "Dockerfile.prod"
+
+[env]
+  ENVIRONMENT = "production"
+  TESTING = "False"
+  PORT = "8004"
+
+[deploy]
+  release_command = "bash -l release.sh"

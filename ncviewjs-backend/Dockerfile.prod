@@ -1,0 +1,31 @@
+FROM mambaorg/micromamba:1.0.0
+
+
+# create the appropriate directories
+ENV MAMBA_USER=mambauser
+ENV APP_HOME=/home/${MAMBA_USER}/web
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV ENVIRONMENT production
+ENV TESTING 0
+
+
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./envs/environment.yml /tmp/environment.yml
+RUN micromamba install -y -n base -f /tmp/environment.yml
+RUN micromamba clean --all -f -y
+
+
+# modify the PATH at build-time to approximate an activated environment during docker exec
+# warning - not a prefered method, but it works
+ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
+
+# add app
+COPY --chown=$MAMBA_USER:$MAMBA_USER . .
+
+
+# run gunicorn
+CMD gunicorn --bind 0.0.0.0:$PORT app.main:app -k uvicorn.workers.UvicornWorker -w 2 -t 300

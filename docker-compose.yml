@@ -11,8 +11,8 @@ services:
     environment:
       - ENVIRONMENT=dev
       - TESTING=False
-      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_dev
-      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/web_test
+      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/ncview_dev
+      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/ncview_test
     depends_on:
       - web-db
 
