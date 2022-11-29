@@ -37,7 +37,7 @@ def parse_gs_url(url: str) -> tuple[str, str]:
     # https://storage.googleapis.com/carbonplan-share/maps-demo/2d/prec-regrid
     path = url.split('storage.googleapis.com/')[1]
     bucket, key = path.split('/', 1)
-    return bucket, f'/{key}'
+    return bucket, key
 
 
 def parse_az_url(url: str) -> tuple[str, str]:
@@ -61,14 +61,18 @@ def sanitize_url(url: pydantic.AnyUrl) -> SanitizedURL:
     bucket = None
     key = None
 
-    if 'amazonaws.com' in parsed_url.netloc:
-        bucket, key = parse_s3_url(url)
+    if parsed_url.scheme in {'http', 'https'}:
+        if 'amazonaws.com' in parsed_url.netloc:
+            bucket, key = parse_s3_url(url)
 
-    elif 'googleapis.com' in parsed_url.netloc:
-        bucket, key = parse_gs_url(url)
+        elif 'googleapis.com' in parsed_url.netloc:
+            bucket, key = parse_gs_url(url)
 
-    elif 'blob.core.windows.net' in parsed_url.netloc:
-        bucket, key = parse_az_url(url)
+        elif 'blob.core.windows.net' in parsed_url.netloc:
+            bucket, key = parse_az_url(url)
+
+        else:
+            bucket, key = parsed_url.netloc, parsed_url.path
 
     elif parsed_url.scheme in {'s3', 'gs', 'az', 'abfs'}:
         bucket, key = parsed_url.netloc, parsed_url.path
