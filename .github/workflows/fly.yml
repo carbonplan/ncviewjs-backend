@@ -25,4 +25,5 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy
         run: |
+          cd ncviewjs-backend
           flyctl deploy --remote-only
