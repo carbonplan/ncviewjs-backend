@@ -4,6 +4,7 @@ channels:
   - nodefaults
 dependencies:
   - adlfs
+  - alembic >= 1.7.5
   - asyncpg>=0.27
   - black
   - dask >= 2022.11.0
@@ -15,17 +16,16 @@ dependencies:
   - httpie
   - httpx >=0.23.0
   - pip
+  - psycopg2
   - pytest
   - pytest-asyncio
   - pytest-cov
   - pytest-reportlog
   - python=3.10
   - s3fs
+  - sqlmodel >= 0.0.8
   - tomli
-  - tortoise-orm
   - universal_pathlib >=0.0.21
   - uvicorn
   - xarray >=2022.11.0
   - zarr >=2.13
-  - pip:
-      - aerich
