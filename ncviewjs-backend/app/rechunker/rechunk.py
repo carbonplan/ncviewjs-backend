@@ -1,5 +1,6 @@
 import os
 
+import cf_xarray  # noqa: F401
 import fsspec
 import rechunker
 import xarray as xr
@@ -19,7 +20,6 @@ def _generate_tgt_tmp_stores(sanitized_url: SanitizedURL, processing_type: str) 
 
 
 def _retrieve_CF_dims(url: str) -> dict:
-    import cf_xarray  # noqa: F401
 
     ds = xr.open_zarr(url)
     X = ds.cf['X'].name
@@ -37,11 +37,10 @@ def copy_staging_to_production(store_paths: dict):
 
 @task
 def finalize():
-    # TODO: finalize task to post info back to DB
     pass
 
 
-@task
+@task()
 def rechunk_dataset(
     *,
     zarr_store_url: str,
@@ -103,16 +102,19 @@ def rechunk_dataset(
 def rechunk_flow(sanitized_url: SanitizedURL) -> dict:
     store_paths = _generate_tgt_tmp_stores(sanitized_url, processing_type='rechunked')
     cf_dims_dict = _retrieve_CF_dims(sanitized_url.url)
-    rechunk_dataset(
-        zarr_store_url=sanitized_url.url, cf_dims_dict=cf_dims_dict, store_paths=store_paths
+    rechunk_state = rechunk_dataset(
+        zarr_store_url=sanitized_url.url,
+        cf_dims_dict=cf_dims_dict,
+        store_paths=store_paths,
+        return_state=True,
     )
     copy_staging_to_production(store_paths)
-    finalize()
-    return {'production_store': store_paths['prod_store']}
+    return {'production_store': store_paths['prod_store'], 'error': rechunk_state.message}
 
 
 # Note: snippet below is for end2end testing
 # from app.helpers import sanitize_url
+
 # url = "s3://carbonplan-scratch/gpcp_100MB.zarr"
 # sanitized_url = sanitize_url(url)
 # rechunk_flow(sanitized_url)
