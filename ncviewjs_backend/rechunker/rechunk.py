@@ -6,9 +6,10 @@ import rechunker
 import xarray as xr
 import zarr
 from prefect import flow, task
-from utils import determine_chunk_size
 
 from ..schemas.dataset import SanitizedURL
+
+from .utils import determine_chunk_size
 
 
 def _generate_tgt_tmp_stores(sanitized_url: SanitizedURL, processing_type: str) -> dict:
