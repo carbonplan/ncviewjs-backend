@@ -109,7 +109,13 @@ def rechunk_flow(sanitized_url: SanitizedURL) -> dict:
         return_state=True,
     )
     copy_staging_to_production(store_paths)
-    return {'production_store': store_paths['prod_store'], 'error': rechunk_state.message}
+
+    if rechunk_state.conclusion == 'successful':
+        return {"status":"completed", "conclusion":"successful", "rechunked_url": store_paths['production_store']}
+    else:
+        return {"status":"completed", "conclusion":"failed", "error_message": str(rechunk_state.message)}
+
+
 
 
 # Note: snippet below is for end2end testing
