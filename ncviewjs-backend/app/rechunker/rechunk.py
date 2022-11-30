@@ -117,4 +117,4 @@ def rechunk_flow(sanitized_url: SanitizedURL) -> dict:
 
 # url = "s3://carbonplan-scratch/gpcp_100MB.zarr"
 # sanitized_url = sanitize_url(url)
-# rechunk_flow(sanitized_url)
+# result = rechunk_flow(sanitized_url)
