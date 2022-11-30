@@ -8,14 +8,14 @@ import zarr
 from prefect import flow, task
 from utils import determine_chunk_size
 
-from app.models.pydantic import SanitizedURL
+from ..schemas.dataset import SanitizedURL
 
 
 def _generate_tgt_tmp_stores(sanitized_url: SanitizedURL, processing_type: str) -> dict:
     store_suffix = f"/{processing_type}/{sanitized_url.key}"
-    tmp_store = "s3://carbonplan-data-viewer-staging/tmp/" + store_suffix
-    staging_store = "s3://carbonplan-data-viewer-staging" + store_suffix
-    prod_store = "s3://carbonplan-data-viewer-production" + store_suffix
+    tmp_store = f"s3://carbonplan-data-viewer-staging/tmp/{store_suffix}"
+    staging_store = f"s3://carbonplan-data-viewer-staging{store_suffix}"
+    prod_store = f"s3://carbonplan-data-viewer-production{store_suffix}"
     return {'temp_store': tmp_store, 'staging_store': staging_store, 'prod_store': prod_store}
 
 
@@ -111,11 +111,17 @@ def rechunk_flow(sanitized_url: SanitizedURL) -> dict:
     copy_staging_to_production(store_paths)
 
     if rechunk_state.conclusion == 'successful':
-        return {"status":"completed", "conclusion":"successful", "rechunked_url": store_paths['production_store']}
+        return {
+            "status": "completed",
+            "conclusion": "successful",
+            "rechunked_url": store_paths['production_store'],
+        }
     else:
-        return {"status":"completed", "conclusion":"failed", "error_message": str(rechunk_state.message)}
-
-
+        return {
+            "status": "completed",
+            "conclusion": "failed",
+            "error_message": str(rechunk_state.message),
+        }
 
 
 # Note: snippet below is for end2end testing

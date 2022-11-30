@@ -29,5 +29,5 @@ dependencies:
   - uvicorn
   - xarray >=2022.11.0
   - zarr >=2.13
-  - pip
-  - ujson
+  - prefect >= 2.7
+  - cf_xarray
