@@ -2,4 +2,4 @@ import logging
 
 
 def get_logger() -> logging.Logger:
-    return logging.Logger("uvicorn")
+    return logging.getLogger("uvicorn")
