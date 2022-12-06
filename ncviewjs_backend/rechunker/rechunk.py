@@ -47,7 +47,7 @@ def rechunk_dataset(
     zarr_store_url: str,
     cf_dims_dict: dict,
     store_paths: dict,
-    spatial_chunk_square_size: int = 128,
+    spatial_chunk_square_size: int = 256,
     target_size_bytes: int = 5e5,
     max_mem: str = "1000MB",
 ):
@@ -62,7 +62,7 @@ def rechunk_dataset(
     store_paths : dict
         rechunker temp and target paths
     spatial_chunk_square_size : int, optional
-        X,Y spatial chunk size by default 128
+        X,Y spatial chunk size by default 256
     target_size_bytes : int, optional
         target size in bytes, by default 5e5
     max_mem : str, optional
