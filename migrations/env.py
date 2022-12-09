@@ -7,7 +7,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 from ncviewjs_backend.models.dataset import (
-    Dataset,  # (be sure to import all models you need migrated)
+    Dataset, RechunkRun  # (be sure to import all models you need migrated)
 )
 
 # this is the Alembic Config object, which provides
