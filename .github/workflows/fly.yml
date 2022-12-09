@@ -24,6 +24,5 @@ jobs:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy
-        working-directory: ./ncviewjs-backend
         run: |
           flyctl deploy --remote-only

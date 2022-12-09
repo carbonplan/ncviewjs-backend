@@ -1,3 +1,24 @@
+[project]
+name = "ncviewjs-backend"
+description = "Backend for ncviewjs"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "CarbonPlan", email = "hello@carbonplan.org"}]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering",
+]
+
+dynamic = ["version"]
+
+
 [tool.black]
 line-length = 100
 target-version = ['py310']
@@ -11,5 +32,19 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "dirty-tag"
+fallback_version = "999"
+
 [tool.isort]
 profile = "black"
+
+
+[tool.coverage.run]
+omit = ["tests/*"]
+branch = true
+
+[tool.pytest.ini_options]
+console_output_style = "count"
+addopts = "--cov=./ --cov-report=xml --report-log pytest-log.jsonl --cov-append --cov-report term-missing --verbose"

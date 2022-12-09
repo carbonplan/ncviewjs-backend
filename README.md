@@ -3,7 +3,7 @@
   height='48'
 />
 
-# Rechunking Timing
+# Backend services for ncviewjs
 
 [![CI](https://github.com/carbonplan/python-project-template/actions/workflows/main.yaml/badge.svg)](https://github.com/carbonplan/python-project-template/actions/workflows/main.yaml)
 ![MIT License][]
