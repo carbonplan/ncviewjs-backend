@@ -78,7 +78,7 @@ jobs:
           issue-title: ⚠️ Nightly CI failed ⚠️
           issue-label: nightly
 
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          fail_ci_if_error: true
+      # - name: Upload code coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     fail_ci_if_error: true
