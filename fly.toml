@@ -15,7 +15,7 @@ kill_timeout = 5
   auto_rollback = true
 
 [[services]]
-  internal_port = 8004
+  internal_port = 8000
   protocol = "tcp"
 
   [services.concurrency]
@@ -39,7 +39,7 @@ kill_timeout = 5
 [env]
   ENVIRONMENT = "production"
   TESTING = "False"
-  PORT = "8004"
+  PORT = "8000"
 
 [deploy]
   release_command = "bash -l release.sh"

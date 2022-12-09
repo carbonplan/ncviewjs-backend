@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Run database migrations
 echo "Running database migrations..."
+python -m alembic upgrade head
 
-
-# exit 123
+echo "release complete!"
