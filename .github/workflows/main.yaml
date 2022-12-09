@@ -15,6 +15,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -27,27 +30,41 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    env:
-      DOCKER_BUILDKIT: 1
+
+    # https://docs.github.com/en/actions/using-containerized-services/creating-postgresql-service-containers
+    # See also https://remarkablemark.org/blog/2021/03/14/setup-postgresql-in-github-actions/
+    # and https://github.com/actions/example-services/blob/master/.github/workflows/postgres-service.yml
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres_user
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         shell: bash -l {0}
     steps:
       - uses: actions/checkout@v3
-      - name: Build docker image
-        run: |
-          docker-compose up -d --build
 
       - name: Database migration
-        shell: 'script -q -e -c "bash {0}"'
         run: |
-          docker-compose exec web aerich init-db
+          python -m alembic upgrade head
 
-      - name: Run tests
-        id: status
-        shell: 'script -q -e -c "bash {0}"'
-        run: |
-          docker-compose exec web python -m pytest
+      # - name: Run tests
+      #   id: status
+      #   shell: 'script -q -e -c "bash {0}"'
+      #   run: |
+      #     docker-compose exec web python -m pytest
 
       - name: Open or update issue on failure
         if: |
