@@ -1,5 +1,4 @@
-import fastapi.responses
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from sqlmodel import Session, select
 
@@ -21,11 +20,7 @@ def get_rechunk_run(id: int, session: Session = Depends(get_session)):
     try:
         return session.exec(select(RechunkRun).where(RechunkRun.id == id)).one()
     except NoResultFound:
-        return fastapi.responses.JSONResponse(
-            status_code=404, content={"detail": f"Run with {id} not found"}
-        )
+        raise HTTPException(status_code=404, content={"detail": f"Run with {id} not found"})
 
     except MultipleResultsFound:
-        return fastapi.responses.JSONResponse(
-            status_code=500, content={"detail": f"Multiple runs found for {id}"}
-        )
+        raise HTTPException(status_code=500, content={"detail": f"Multiple runs found for {id}"})

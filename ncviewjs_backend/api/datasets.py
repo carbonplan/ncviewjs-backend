@@ -6,7 +6,7 @@ from ..database import get_session
 from ..dataset_validation import validate_zarr_store
 from ..helpers import sanitize_url
 from ..logging import get_logger
-from ..models.dataset import Dataset, RechunkRun
+from ..models.dataset import Dataset, DatasetRead, DatasetWithRechunkRuns, RechunkRun
 from ..schemas.dataset import StorePayload
 
 router = APIRouter()
@@ -29,7 +29,7 @@ def _validate_store(*, dataset: Dataset, rechunk_run: RechunkRun, session: Sessi
         logger.error(f'Validation of store: {dataset.url} failed: {exc}')
 
 
-@router.put("/", response_model=Dataset, summary="Register a dataset")
+@router.put("/", response_model=DatasetRead, summary="Register a dataset")
 def register_dataset(
     payload: StorePayload,
     background_tasks: BackgroundTasks,
@@ -74,7 +74,7 @@ def register_dataset(
     return dataset
 
 
-@router.get("/{id}", response_model=Dataset, summary="Get a dataset by ID")
+@router.get("/{id}", response_model=DatasetWithRechunkRuns, summary="Get a dataset by ID")
 def get_dataset_by_id(id: int, session: Session = Depends(get_session)) -> Dataset:
     """Get a dataset from the database."""
     logger.info(f"Getting dataset: {id}")
@@ -86,7 +86,7 @@ def get_dataset_by_id(id: int, session: Session = Depends(get_session)) -> Datas
 
 
 # Get the dataset from the database using the md5_id
-@router.get("/{md5_id}", response_model=Dataset, summary="Get a dataset by MD5 ID")
+@router.get("/{md5_id}", response_model=DatasetWithRechunkRuns, summary="Get a dataset by MD5 ID")
 def get_dataset_by_md5_id(md5_id: str, session: Session = Depends(get_session)) -> Dataset:
     """Get a dataset from the database using the MD5 ID."""
 
@@ -99,6 +99,6 @@ def get_dataset_by_md5_id(md5_id: str, session: Session = Depends(get_session)) 
     return dataset
 
 
-@router.get("/")
+@router.get("/", response_model=list[DatasetWithRechunkRuns])
 def list_datasets(session: Session = Depends(get_session)):
     return session.exec(select(Dataset)).all()
