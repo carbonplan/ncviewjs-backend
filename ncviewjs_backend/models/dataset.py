@@ -38,15 +38,23 @@ class DatasetRead(DatasetBase):
     id: int
 
 
-class RechunkRun(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+class RechunkRunBase(SQLModel):
     error_message: str | None
     status: Status = Status.queued
     outcome: Outcome | None = None
     rechunked_dataset: pydantic.HttpUrl | None = None
+
+
+class RechunkRun(RechunkRunBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     dataset: Dataset | None = Relationship(back_populates="rechunk_runs")
     dataset_id: int | None = Field(default=None, foreign_key="dataset.id")
 
 
+class RechunkRunRead(RechunkRunBase):
+    id: int
+    dataset: DatasetRead
+
+
 class DatasetWithRechunkRuns(DatasetRead):
-    rechunk_runs: list[RechunkRun] | None = []
+    rechunk_runs: list[RechunkRunRead] | None = []
