@@ -11,5 +11,4 @@ async def ping(settings: Settings = Depends(get_settings)) -> dict:
         "ping": "pong",
         "environment": settings.environment,
         "testing": settings.testing,
-        "database_url": settings.database_url,
     }

@@ -37,7 +37,7 @@ kill_timeout = 5
 
 
 [env]
-  ENVIRONMENT = "production"
+  ENVIRONMENT = "prod"
   TESTING = "False"
   PORT = "8000"
 
