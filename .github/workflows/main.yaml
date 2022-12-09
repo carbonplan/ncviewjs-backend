@@ -69,11 +69,10 @@ jobs:
         run: |
           python -m alembic upgrade head
 
-      # - name: Run tests
-      #   id: status
-      #   shell: 'script -q -e -c "bash {0}"'
-      #   run: |
-      #     docker-compose exec web python -m pytest
+      - name: Run tests
+        id: status
+        run: |
+          python -m pytest
 
       - name: Open or update issue on failure
         if: |
@@ -84,12 +83,11 @@ jobs:
 
         uses: xarray-contrib/issue-from-pytest-log@v1
         with:
-          log-path: ./ncviewjs-backend/pytest-log.jsonl
+          log-path: pytest-log.jsonl
           issue-title: ⚠️ Nightly CI failed ⚠️
           issue-label: nightly
 
-      # - name: Upload code coverage to Codecov
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     files: ./ncviewjs-backend/coverage.xml
-      #     fail_ci_if_error: true
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
