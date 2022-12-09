@@ -1,5 +1,4 @@
 import pytest
-
 from app.store_validation import (
     DatasetTooLargeError,
     UnableToOpenDatasetError,
