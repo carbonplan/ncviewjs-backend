@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from .api import dataset, datasets, ping
+from .api import datasets, ping
 from .logging import get_logger
 
 logger = get_logger()
@@ -9,9 +9,7 @@ logger = get_logger()
 def create_application() -> FastAPI:
     application = FastAPI()
     application.include_router(ping.router, tags=["ping"])
-    application.include_router(dataset.router, tags=["dataset"], prefix="/dataset")
     application.include_router(datasets.router, tags=["datasets"], prefix="/datasets")
-
     return application
 
 
