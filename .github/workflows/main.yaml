@@ -19,15 +19,6 @@ env:
   DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - uses: pre-commit/action@v3.0.0
-
   test:
     runs-on: ubuntu-latest
 
@@ -69,11 +60,10 @@ jobs:
         run: |
           python -m alembic upgrade head
 
-      # - name: Run tests
-      #   id: status
-      #   shell: 'script -q -e -c "bash {0}"'
-      #   run: |
-      #     docker-compose exec web python -m pytest
+      - name: Run tests
+        id: status
+        run: |
+          python -m pytest
 
       - name: Open or update issue on failure
         if: |
@@ -84,12 +74,11 @@ jobs:
 
         uses: xarray-contrib/issue-from-pytest-log@v1
         with:
-          log-path: ./ncviewjs-backend/pytest-log.jsonl
+          log-path: pytest-log.jsonl
           issue-title: ⚠️ Nightly CI failed ⚠️
           issue-label: nightly
 
       # - name: Upload code coverage to Codecov
       #   uses: codecov/codecov-action@v3
       #   with:
-      #     files: ./ncviewjs-backend/coverage.xml
       #     fail_ci_if_error: true

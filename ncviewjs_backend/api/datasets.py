@@ -29,7 +29,7 @@ def _validate_store(*, dataset: Dataset, rechunk_run: RechunkRun, session: Sessi
         logger.error(f'Validation of store: {dataset.url} failed: {exc}')
 
 
-@router.put("/", response_model=DatasetRead, summary="Register a dataset")
+@router.put("/", response_model=DatasetRead, status_code=201, summary="Register a dataset")
 def register_dataset(
     payload: StorePayload,
     background_tasks: BackgroundTasks,
