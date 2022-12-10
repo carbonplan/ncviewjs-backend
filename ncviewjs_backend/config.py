@@ -11,6 +11,9 @@ class Settings(pydantic.BaseSettings):
     environment: typing.Literal['dev', 'prod'] = 'dev'
     testing: bool = False
     database_url: pydantic.AnyUrl = None
+    scratch_bucket: pydantic.AnyUrl = 's3://carbonplan-data-viewer-staging/tmp'
+    staging_bucket: pydantic.AnyUrl = 's3://carbonplan-data-viewer-staging'
+    production_bucket: pydantic.AnyUrl = 's3://carbonplan-data-viewer-production'
 
     @pydantic.validator('database_url', pre=True)
     def database_url_from_env(cls, value: str) -> str:

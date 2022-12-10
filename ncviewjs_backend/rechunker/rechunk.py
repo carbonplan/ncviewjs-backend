@@ -7,15 +7,17 @@ import xarray as xr
 import zarr
 from prefect import flow, task
 
+from ..config import get_settings
 from ..schemas.dataset import SanitizedURL
 from .utils import determine_chunk_size
 
 
 def _generate_tgt_tmp_stores(sanitized_url: SanitizedURL, processing_type: str) -> dict:
-    store_suffix = f"/{processing_type}/{sanitized_url.key}"
-    tmp_store = f"s3://carbonplan-data-viewer-staging/tmp/{store_suffix}"
-    staging_store = f"s3://carbonplan-data-viewer-staging{store_suffix}"
-    prod_store = f"s3://carbonplan-data-viewer-production{store_suffix}"
+    settings = get_settings()
+    store_suffix = f"{processing_type}/{sanitized_url.key}"
+    tmp_store = f"{settings.scratch_bucket}/{store_suffix}"
+    staging_store = f"{settings.staging_bucket}/{store_suffix}"
+    prod_store = f"{settings.production_bucket}/{store_suffix}"
     return {'temp_store': tmp_store, 'staging_store': staging_store, 'prod_store': prod_store}
 
 
