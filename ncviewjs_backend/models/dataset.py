@@ -56,5 +56,9 @@ class RechunkRunRead(RechunkRunBase):
     dataset: DatasetRead
 
 
+class RechunkRunWithoutDataset(RechunkRunBase):
+    id: int
+
+
 class DatasetWithRechunkRuns(DatasetRead):
-    rechunk_runs: list[RechunkRunRead] | None = []
+    rechunk_runs: list[RechunkRunWithoutDataset] | None = []
