@@ -1,15 +1,12 @@
 # Docs
 
-
-
 # Running ncviewjs-backend locally
 
-&nbsp;  
+&nbsp;
 
- 
 ## Creating a development environment
 
-Using either mamba or conda, create a virtual environement using the supplied .yml configuration file. 
+Using either mamba or conda, create a virtual environement using the supplied .yml configuration file.
 
 **Note: You can substitute `mamba` for `conda` if you do not have mamba installed**
 
@@ -29,7 +26,7 @@ mamba activate ncviewjs
 
 ```
 
-&nbsp;  
+&nbsp;
 
 ## Starting a postgres database
 
@@ -39,13 +36,11 @@ Follow this [link](https://postgresapp.com/) to download and start a postgres da
 
 In your terminal type:
 
-``` export DATABASE_URL="postgres://postgres:@localhost:5432/postgres" ```
+`export DATABASE_URL="postgres://postgres:@localhost:5432/postgres"`
 
-&nbsp;  
-
+&nbsp;
 
 ## Database migration
-
 
 In the root directory of the project run:
 
@@ -58,8 +53,8 @@ This should create the tables in the postgres database based upon the models def
 To check that the tables exists in the local postgres database you can run in your terminal:
 
 ```console
- psql 
- ```
+ psql
+```
 
 ```console
 psql (14.6)
@@ -70,7 +65,7 @@ Type "help" for help.
 postgres=# \c postgres
 ```
 
-```console 
+```console
 You are now connected to database "postgres" as user "postgres".
 ```
 
@@ -87,8 +82,7 @@ postgres=# \dt
  public | rechunkrun      | table | postgres
 ```
 
-&nbsp;  
-
+&nbsp;
 
 ## Running tests
 
