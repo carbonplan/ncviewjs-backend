@@ -1,4 +1,4 @@
-import os
+import subprocess
 
 import cf_xarray  # noqa: F401
 import fsspec
@@ -34,7 +34,7 @@ def _retrieve_CF_dims(url: str) -> dict:
 def copy_staging_to_production(store_paths: dict):
     transfer_str = f"skyplane cp -r -y {store_paths['staging_store']} {store_paths['prod_store']}"
     print(transfer_str)
-    os.system(transfer_str)
+    subprocess.check_output(transfer_str, shell=True)
 
 
 @task
