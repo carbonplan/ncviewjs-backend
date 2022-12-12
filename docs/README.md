@@ -14,7 +14,7 @@ In the top level of the project directory run:
 
 ```python
 
-mamba env create --file environment-dev.yml python=3.10
+mamba env update -f environment-dev.yml
 
 ```
 
