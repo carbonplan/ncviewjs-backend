@@ -1,85 +1,94 @@
 # Docs
 
-## Running ncviewjs-backend locally
 
-To run the backend locally, you need to have both [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/) installed. Start by ensuring that you have Docker and Docker Compose:
 
-```bash
-docker --version
+# Running ncviewjs-backend locally
 
-docker-compose --version
-```
+&nbsp;  
 
-From the root of the repository, run the following command to the Docker image:
+ 
+## Creating a development environment
 
-```bash
-docker-compose build
-```
+Using either mamba or conda, create a virtual environement using the supplied .yml configuration file. 
 
-This will take a while the first time you run it. Subsequent runs will be much faster.
-Once the image is built, you can start the backend:
+**Note: You can substitute `mamba` for `conda` if you do not have mamba installed**
 
-```bash
-docker-compose up
-```
-
-This will start the backend on port 8004. You can now access the backend at <http://localhost:8004>.
-
-## Database migrations
-
-The backend uses [Aerich](https://github.com/tortoise/aerich) for database migrations. To create a new migration, run the following command:
-
-```bash
-docker-compose exec web bash -it -c "aerich init -t app.db.TORTOISE_ORM"
-```
-
-This will create a config file called `ncviewjs-backend/pyproject.toml`:
+In the top level of the project directory run:
 
 ```python
-[tool.aerich]
-tortoise_orm = "app.db.TORTOISE_ORM"
-location = "./migrations"
-src_folder = "./."
+
+mamba env create --file environment-dev.yml python=3.10
+
 ```
 
-To create the first migration, run the following command:
+Then activate the environment:
 
 ```bash
-docker-compose exec web aerich init-db
+
+mamba activate ncviewjs
+
 ```
 
-```console
-docker-compose exec web aerich upgrade
-```
+&nbsp;  
 
-```console
-Success create app migrate location migrations/models
-Success generate schema for app "models"
-```
+## Starting a postgres database
 
-That's it! You should now be able to see the two tables:
+Follow this [link](https://postgresapp.com/) to download and start a postgres database instance.
+
+### Setting Database URL as Environment Variable
+
+In your terminal type:
+
+``` export DATABASE_URL="postgres://postgres:@localhost:5432/postgres" ```
+
+&nbsp;  
+
+
+## Database migration
+
+
+In the root directory of the project run:
 
 ```bash
-docker-compose exec web-db psql -U postgres
+alembic upgrade head
 ```
+
+This should create the tables in the postgres database based upon the models defined in `models/`
+
+To check that the tables exists in the local postgres database you can run in your terminal:
+
+```console
+ psql 
+ ```
 
 ```console
 psql (14.6)
 Type "help" for help.
-
-postgres=# \c ncview_dev
-You are now connected to database "ncview_dev" as user "postgres".
-ncview_dev=# \dt
-         List of relations
- Schema |  Name  | Type  |  Owner
---------+--------+-------+----------
- public | aerich | table | postgres
- public | store  | table | postgres
-(2 rows)
 ```
 
-> **Note**
-> The `aerich` documentation on database migration resides here: <https://tortoise-orm.readthedocs.io/en/latest/migration.html>
+```console
+postgres=# \c postgres
+```
+
+```console 
+You are now connected to database "postgres" as user "postgres".
+```
+
+```console
+postgres=# \dt
+```
+
+```console
+              List of relations
+ Schema |      Name       | Type  |  Owner
+--------+-----------------+-------+----------
+ public | alembic_version | table | postgres
+ public | dataset         | table | postgres
+ public | rechunkrun      | table | postgres
+```
+
+&nbsp;  
+
 
 ## Running tests
 
