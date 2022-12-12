@@ -45,7 +45,7 @@ In your terminal type:
 In the root directory of the project run:
 
 ```bash
-alembic upgrade head
+python -m alembic upgrade head
 ```
 
 This should create the tables in the postgres database based upon the models defined in `models/`
