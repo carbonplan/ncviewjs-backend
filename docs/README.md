@@ -92,7 +92,6 @@ To run the tests, run the following command:
 docker-compose exec web python -m pytest -v
 ```
 
-
 ## Start FastAPI
 
 In the project top-level directory run:
