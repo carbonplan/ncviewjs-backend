@@ -9,6 +9,9 @@ urls = [
     "https://carbonplan-share.s3.us-west-2.amazonaws.com/cmip6-downscaling/DeepSD/",
     "az://carbonplan-forests/risks/results/web/fire.zarr",
     "https://carbonplan.blob.core.windows.net/carbonplan-forests/risks/results/web/fire.zarr",
+    'gs://cmip6/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/historical/r1i1p1f1/Omon/thetao/gn/v20180701/',
+    'gs://cmip6/CMIP6/CMIP/CCCma/CanESM5/historical/r1i1p1f1/Omon/thetao/gn/v20190429/',
+    'gs://cmip6/CMIP6/CMIP/MPI-M/MPI-ESM1-2-HR/historical/r1i1p1f1/Omon/thetao/gn/v20190710/',
 ]
 
 

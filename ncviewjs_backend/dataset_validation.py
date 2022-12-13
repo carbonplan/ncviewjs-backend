@@ -1,7 +1,13 @@
 import dask.utils
 import xarray as xr
+from sqlmodel import Session
 
-DATASET_SIZE_THRESHOLD = 1e9
+from .logging import get_logger
+from .models.dataset import Dataset, RechunkRun
+
+DATASET_SIZE_THRESHOLD = 120e9
+
+logger = get_logger()
 
 
 class DatasetTooLargeError(Exception):
@@ -42,3 +48,44 @@ def validate_zarr_store(url: str) -> None:
 
     except Exception as exc:
         raise UnableToOpenDatasetError(f'Unable to open Zarr store: {url} due to {exc}') from exc
+
+
+def retrieve_CF_axes(url: str) -> dict[str, dict[str, str]]:
+    """Retrieve the CF dimensions from the dataset"""
+    import cf_xarray  # noqa
+
+    with xr.open_dataset(url, engine='zarr', chunks={}, decode_cf=False) as ds:
+
+        results = {}
+        for variable in ds.data_vars:
+            axes = ds[variable].cf.axes
+            for key, value in axes.items():
+                axes[key] = value[0]
+
+            results[variable] = axes
+
+        return results
+
+
+def _register_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Session) -> None:
+    """Validate that the store is accessible and update the dataset in the database"""
+    try:
+        validate_zarr_store(dataset.url)
+        # Update the dataset in the database with the CF axes
+
+        cf_axes = retrieve_CF_axes(dataset.url)
+        dataset.cf_axes = cf_axes
+        session.add(dataset)
+        session.commit()
+        session.refresh(dataset)
+
+    except Exception as exc:
+
+        # update the rechunk run in the database
+        rechunk_run.status = "completed"
+        rechunk_run.outcome = "failure"
+        rechunk_run.error_message = str(exc)
+        session.add(rechunk_run)
+        session.commit()
+        session.refresh(rechunk_run)
+        logger.error(f'Validation of store: {dataset.url} failed: {exc}')
