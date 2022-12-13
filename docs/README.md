@@ -91,3 +91,13 @@ To run the tests, run the following command:
 ```bash
 docker-compose exec web python -m pytest -v
 ```
+
+## Start FastAPI
+
+In the project top-level directory run:
+
+```console
+
+uvicorn ncviewjs_backend.main:app --reload
+
+```
