@@ -6,6 +6,7 @@ dependencies:
   - adlfs
   - alembic >= 1.7.5
   - asyncpg>=0.27
+  - boto3
   - dask >= 2022.11.0
   - dictdiffer >= 0.9.0
   - fastapi>=0.87.0
