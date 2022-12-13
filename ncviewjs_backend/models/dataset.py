@@ -1,7 +1,7 @@
 import enum
 
 import pydantic
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import JSON, Column, Field, Relationship, SQLModel
 
 
 class Status(str, enum.Enum):
@@ -27,6 +27,7 @@ class DatasetBase(SQLModel):
     protocol: str
     key: str
     bucket: str
+    cf_axes: dict[str, dict] | None = Field(default={}, sa_column=Column(JSON))
 
 
 class Dataset(DatasetBase, table=True):
@@ -56,5 +57,9 @@ class RechunkRunRead(RechunkRunBase):
     dataset: DatasetRead
 
 
+class RechunkRunWithoutDataset(RechunkRunBase):
+    id: int
+
+
 class DatasetWithRechunkRuns(DatasetRead):
-    rechunk_runs: list[RechunkRunRead] | None = []
+    rechunk_runs: list[RechunkRunWithoutDataset] | None = []
