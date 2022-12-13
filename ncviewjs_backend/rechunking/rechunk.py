@@ -8,6 +8,7 @@ import zarr
 from prefect import flow, task
 
 from ..config import get_settings
+from ..models.dataset import Dataset
 from ..schemas.dataset import SanitizedURL
 from .utils import determine_chunk_size
 
@@ -101,34 +102,48 @@ def rechunk_dataset(
 
 
 @flow(name="rechunking-flow")
-def rechunk_flow(sanitized_url: SanitizedURL) -> dict:
-    store_paths = _generate_tgt_tmp_stores(sanitized_url, processing_type='rechunked')
-    cf_dims_dict = _retrieve_CF_dims(sanitized_url.url)
-    rechunk_state = rechunk_dataset(
-        zarr_store_url=sanitized_url.url,
-        cf_dims_dict=cf_dims_dict,
-        store_paths=store_paths,
-        return_state=True,
-    )
-    copy_staging_to_production(store_paths)
+def rechunk_flow(*, dataset: Dataset) -> dict:
+    """Rechunks zarr dataset to match chunk schema required by carbonplan web-viewer.
 
-    if rechunk_state.conclusion == 'successful':
-        return {
-            "status": "completed",
-            "conclusion": "successful",
-            "rechunked_url": store_paths['production_store'],
-        }
-    else:
-        return {
-            "status": "completed",
-            "conclusion": "failed",
-            "error_message": str(rechunk_state.message),
-        }
+    Parameters
+    ----------
+    dataset : Dataset
+        Dataset object to be rechunked
+
+    Returns
+    -------
+    dict
+        rechunking status
+    """
+    print(dataset)
 
 
-# Note: snippet below is for end2end testing
-# from app.helpers import sanitize_url
+#     cf_dims_dict = _retrieve_CF_dims(sanitized_url.url)
+#     rechunk_state = rechunk_dataset(
+#         zarr_store_url=sanitized_url.url,
+#         cf_dims_dict=cf_dims_dict,
+#         store_paths=store_paths,
+#         return_state=True,
+#     )
+#     copy_staging_to_production(store_paths)
 
-# url = "s3://carbonplan-scratch/gpcp_100MB.zarr"
-# sanitized_url = sanitize_url(url)
-# result = rechunk_flow(sanitized_url)
+#     if rechunk_state.conclusion == 'successful':
+#         return {
+#             "status": "completed",
+#             "conclusion": "successful",
+#             "rechunked_url": store_paths['production_store'],
+#         }
+#     else:
+#         return {
+#             "status": "completed",
+#             "conclusion": "failed",
+#             "error_message": str(rechunk_state.message),
+#         }
+
+
+# # Note: snippet below is for end2end testing
+# # from app.helpers import sanitize_url
+
+# # url = "s3://carbonplan-scratch/gpcp_100MB.zarr"
+# # sanitized_url = sanitize_url(url)
+# # result = rechunk_flow(sanitized_url)

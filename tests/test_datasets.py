@@ -3,6 +3,7 @@ import json
 import pytest
 
 urls = [
+    "s3://carbonplan-scratch/gpcp_100MB.zarr",
     "gs://carbonplan-share/maps-demo/2d/prec-regrid/",
     "https://storage.googleapis.com/carbonplan-share/maps-demo/2d/prec-regrid",
     "s3://carbonplan-share/cmip6-downscaling/DeepSD/",
@@ -15,14 +16,7 @@ urls = [
 ]
 
 
-columns = {
-    "id",
-    "url",
-    "bucket",
-    "key",
-    "protocol",
-    "md5_id",
-}
+columns = {"id", "url", "bucket", "key", "protocol", "md5_id", "cf_axes"}
 
 
 @pytest.mark.parametrize(

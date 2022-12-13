@@ -79,6 +79,8 @@ def _register_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Ses
         session.commit()
         session.refresh(dataset)
 
+        logger.info(f'Validation of store: {dataset.url} succeeded')
+
     except Exception as exc:
 
         # update the rechunk run in the database
@@ -88,4 +90,5 @@ def _register_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Ses
         session.add(rechunk_run)
         session.commit()
         session.refresh(rechunk_run)
-        logger.error(f'Validation of store: {dataset.url} failed: {exc}')
+        logger.error(f'Rechunking run: {rechunk_run}\nfailed with error: {exc}')
+        raise RuntimeError("Task failed") from exc
