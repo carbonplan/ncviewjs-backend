@@ -31,3 +31,5 @@ dependencies:
   - zarr >=2.13
   - prefect >= 2.7
   - cf_xarray
+  - pip:
+      - skyplane
