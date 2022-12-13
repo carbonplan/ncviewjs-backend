@@ -5,6 +5,7 @@ import pydantic
 
 class StorePayload(pydantic.BaseModel):
     url: pydantic.AnyUrl
+    force: bool = False
 
 
 class SanitizedURL(pydantic.BaseModel):
