@@ -31,3 +31,5 @@ dependencies:
   - zarr >=2.13
   - pip
   - ujson
+  - pip:
+      - skyplane
