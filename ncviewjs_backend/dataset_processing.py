@@ -6,7 +6,7 @@ from .logging import get_logger
 from .models.dataset import Dataset, RechunkRun
 from .rechunking.rechunk import rechunk_flow
 
-DATASET_SIZE_THRESHOLD = 120e9
+DATASET_SIZE_THRESHOLD = 7e9
 
 logger = get_logger()
 

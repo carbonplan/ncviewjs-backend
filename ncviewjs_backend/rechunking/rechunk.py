@@ -8,22 +8,9 @@ import xarray as xr
 import zarr
 
 from ..config import get_settings
+from ..helpers import s3_to_https
 from ..models.dataset import Dataset
 from .utils import determine_chunk_size
-
-
-def s3_to_https(*, s3_url: str, region: str = 'us-west-2') -> str:
-    # Split the URL into its components
-    s3_parts = s3_url.split('/')
-
-    # Get the bucket name from the first part of the URL
-    bucket_name = s3_parts[2]
-
-    # Join the remaining parts of the URL to form the path to the file
-    path = '/'.join(s3_parts[3:])
-
-    # Return the HTTPS URL in the desired format
-    return f'https://{bucket_name}.s3.{region}.amazonaws.com/{path}'
 
 
 def copy_staging_to_production(*, staging_store: pydantic.AnyUrl, prod_store: pydantic.AnyUrl):
