@@ -3,9 +3,7 @@ import json
 import pytest
 
 urls = [
-    "s3://carbonplan-scratch/gpcp_100MB.zarr",
-    "gs://carbonplan-share/maps-demo/2d/prec-regrid/",
-    "https://storage.googleapis.com/carbonplan-share/maps-demo/2d/prec-regrid",
+    "gs://carbonplan-maps/ncview/demo/100MiB/CMIP6_TaiESM1_Amon_hfls.zarr",
     "s3://carbonplan-share/cmip6-downscaling/DeepSD/",
     "https://carbonplan-share.s3.us-west-2.amazonaws.com/cmip6-downscaling/DeepSD/",
     "az://carbonplan-forests/risks/results/web/fire.zarr",
