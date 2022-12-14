@@ -89,12 +89,13 @@ def rechunk_dataset(
     print(f'Chunks: {chunks_dict}')
 
     storage_options = {
-        'aws_access_key_id': os.environ['AWS_ACCESS_KEY_ID'],
-        'aws_secret_access_key': os.environ['AWS_SECRET_ACCESS_KEY'],
+        'anon': False,
+        'key': os.environ['AWS_ACCESS_KEY_ID'],
+        'secret': os.environ['AWS_SECRET_ACCESS_KEY'],
     }
 
-    tmp_mapper = fsspec.get_mapper(store_paths['temp_store'], storage_options=storage_options)
-    tgt_mapper = fsspec.get_mapper(store_paths['staging_store'], storage_options=storage_options)
+    tmp_mapper = fsspec.get_mapper(store_paths['temp_store'], **storage_options)
+    tgt_mapper = fsspec.get_mapper(store_paths['staging_store'], **storage_options)
 
     array_plan = rechunker.rechunk(group, chunks_dict, max_mem, tgt_mapper, temp_store=tmp_mapper)
     array_plan.execute()
