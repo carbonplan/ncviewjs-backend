@@ -1,6 +1,6 @@
 import pytest
 
-from ncviewjs_backend.dataset_validation import (
+from ncviewjs_backend.dataset_processing import (
     DatasetTooLargeError,
     UnableToOpenDatasetError,
     validate_zarr_store,

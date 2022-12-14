@@ -17,6 +17,13 @@ concurrency:
 
 env:
   DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: us-west-2
+  AWS_USER: ${{ secrets.AWS_USER }}
+  SCRATCH_BUCKET: s3://carbonplan-scratch/temp
+  STAGING_BUCKET: s3://carbonplan-scratch/staging
+  PRODUCTION_BUCKET: s3://carbonplan-scratch/production
 
 jobs:
   test:
@@ -50,11 +57,17 @@ jobs:
       - name: Set up conda environment
         uses: mamba-org/provision-with-micromamba@v14
         with:
+          micromamba-version: latest
+          channel-priority: strict
           environment-file: environment-dev.yml
           environment-name: ncviewjs
           cache-env: true
           extra-specs: |
             python="3.10"
+
+      - name: Skyplane init
+        run: |
+          skyplane init -y --disable-config-azure --disable-config-gcp
 
       - name: Database migration
         run: |

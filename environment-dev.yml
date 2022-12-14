@@ -8,6 +8,8 @@ dependencies:
   - asyncpg>=0.27
   - black
   - boto3
+  - cftime
+  - cf_xarray
   - dask >= 2022.11.0
   - dictdiffer >= 0.9.0
   - fastapi>=0.87.0
@@ -23,6 +25,7 @@ dependencies:
   - pytest-cov
   - pytest-reportlog
   - python=3.10
+  - rechunker
   - s3fs
   - sqlmodel >= 0.0.8
   - tomli
@@ -30,7 +33,5 @@ dependencies:
   - uvicorn
   - xarray >=2022.11.0
   - zarr >=2.13
-  - pip
-  - ujson
   - pip:
       - skyplane
