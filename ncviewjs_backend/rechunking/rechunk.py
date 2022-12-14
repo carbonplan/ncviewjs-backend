@@ -21,6 +21,7 @@ def copy_staging_to_production(*, staging_store: pydantic.AnyUrl, prod_store: py
     transfer_str = f"skyplane cp -r -y {staging_store} {prod_store}"
     logger.info(f"Copying staging store to production store: {transfer_str}")
     subprocess.check_call(transfer_str, shell=True)
+    logger.info("Successfully copied staging store to production store")
 
 
 def dataset_is_valid(*, zarr_store_url: pydantic.HttpUrl):
@@ -133,7 +134,7 @@ def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
     pydantic.HttpUrl
         https url to rechunked target store
     """
-    store_paths = generate_stores(key=dataset.key, bucket=dataset.bucket, md5_id=dataset.md5_id)
+    store_paths = generate_stores(key=dataset.key, bucket=dataset.bucket)
     rechunk_dataset(
         zarr_store_url=dataset.url, cf_axes_dict=dataset.cf_axes, store_paths=store_paths
     )
