@@ -1,53 +1,41 @@
 import subprocess
+import uuid
 
-import cf_xarray  # noqa: F401
 import fsspec
+import pydantic
 import rechunker
 import xarray as xr
 import zarr
-from prefect import flow, task
 
 from ..config import get_settings
 from ..models.dataset import Dataset
-from ..schemas.dataset import SanitizedURL
 from .utils import determine_chunk_size
 
 
-def _generate_tgt_tmp_stores(sanitized_url: SanitizedURL, processing_type: str) -> dict:
-    settings = get_settings()
-    store_suffix = f"{processing_type}/{sanitized_url.key}"
-    tmp_store = f"{settings.scratch_bucket}/{store_suffix}"
-    staging_store = f"{settings.staging_bucket}/{store_suffix}"
-    prod_store = f"{settings.production_bucket}/{store_suffix}"
-    return {'temp_store': tmp_store, 'staging_store': staging_store, 'prod_store': prod_store}
+def s3_to_https(*, s3_url: str, region: str = 'us-west-2') -> str:
+    # Split the URL into its components
+    s3_parts = s3_url.split('/')
+
+    # Get the bucket name from the first part of the URL
+    bucket_name = s3_parts[2]
+
+    # Join the remaining parts of the URL to form the path to the file
+    path = '/'.join(s3_parts[3:])
+
+    # Return the HTTPS URL in the desired format
+    return f'https://{bucket_name}.s3.{region}.amazonaws.com/{path}'
 
 
-def _retrieve_CF_dims(url: str) -> dict:
-
-    ds = xr.open_zarr(url)
-    X = ds.cf['X'].name
-    Y = ds.cf['Y'].name
-    T = ds.cf['T'].name
-    return {'X': X, 'Y': Y, 'T': T}
-
-
-@task
-def copy_staging_to_production(store_paths: dict):
-    transfer_str = f"skyplane cp -r -y {store_paths['staging_store']} {store_paths['prod_store']}"
+def copy_staging_to_production(*, staging_store: pydantic.AnyUrl, prod_store: pydantic.AnyUrl):
+    transfer_str = f"skyplane cp -r -y {staging_store} {prod_store}"
     print(transfer_str)
     subprocess.check_output(transfer_str, shell=True)
 
 
-@task
-def finalize():
-    pass
-
-
-@task()
 def rechunk_dataset(
     *,
     zarr_store_url: str,
-    cf_dims_dict: dict,
+    cf_axes_dict: dict,
     store_paths: dict,
     spatial_chunk_square_size: int = 256,
     target_size_bytes: int = 5e5,
@@ -80,19 +68,28 @@ def rechunk_dataset(
         spatial_chunk_square_size=spatial_chunk_square_size, target_size_bytes=target_size_bytes
     )
 
-    ds = xr.open_zarr(zarr_store_url)
+    ds = xr.open_dataset(zarr_store_url, engine='zarr', chunks={}, decode_cf=False)
+    print(ds)
     group = zarr.open_consolidated(zarr_store_url)
-    chunks_dict = {
-        cf_dims_dict['T']: (time_chunk,),
-        cf_dims_dict['X']: (spatial_chunk_square_size,),
-        cf_dims_dict['Y']: (spatial_chunk_square_size,),
-    }
-    for var in ds.data_vars:
-        chunks_dict[var] = {
-            cf_dims_dict['T']: time_chunk,
-            cf_dims_dict['X']: spatial_chunk_square_size,
-            cf_dims_dict['Y']: spatial_chunk_square_size,
-        }
+
+    chunks_dict = {}
+    for variable, axes in cf_axes_dict.items():
+        variable_dims = ds[variable].dims
+        sizes = ds[variable].sizes
+
+        result = {}
+        for key, value in axes.items():
+            if key == 'T':
+                result[value] = min(time_chunk, sizes[value])
+            elif key in ['X', 'Y']:
+                result[value] = min(spatial_chunk_square_size, sizes[value])
+        for dim in variable_dims:
+            if dim not in result.keys():
+                result[dim] = -1
+
+        chunks_dict[variable] = result
+
+    print(f'Chunks: {chunks_dict}')
 
     tmp_mapper = fsspec.get_mapper(store_paths['temp_store'])
     tgt_mapper = fsspec.get_mapper(store_paths['staging_store'])
@@ -100,9 +97,19 @@ def rechunk_dataset(
     array_plan = rechunker.rechunk(group, chunks_dict, max_mem, tgt_mapper, temp_store=tmp_mapper)
     array_plan.execute()
 
+    print(f'Paths: {store_paths}')
 
-@flow(name="rechunking-flow")
-def rechunk_flow(*, dataset: Dataset) -> dict:
+
+def generate_stores(*, key: str, bucket: str, md5_id: str):
+    settings = get_settings()
+    store_suffix = f"{uuid.uuid1()}-{md5_id}.zarr"
+    tmp_store = f"{settings.scratch_bucket}/{store_suffix}"
+    staging_store = f"{settings.staging_bucket}/{store_suffix}"
+    prod_store = f"{settings.production_bucket}/{store_suffix}"
+    return {'temp_store': tmp_store, 'staging_store': staging_store, 'prod_store': prod_store}
+
+
+def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
     """Rechunks zarr dataset to match chunk schema required by carbonplan web-viewer.
 
     Parameters
@@ -115,35 +122,12 @@ def rechunk_flow(*, dataset: Dataset) -> dict:
     dict
         rechunking status
     """
-    print(dataset)
+    store_paths = generate_stores(key=dataset.key, bucket=dataset.bucket, md5_id=dataset.md5_id)
+    rechunk_dataset(
+        zarr_store_url=dataset.url, cf_axes_dict=dataset.cf_axes, store_paths=store_paths
+    )
 
+    # TODO: add a check to make sure the rechunked dataset is valid
+    # TODO: copy store from staging to production
 
-#     cf_dims_dict = _retrieve_CF_dims(sanitized_url.url)
-#     rechunk_state = rechunk_dataset(
-#         zarr_store_url=sanitized_url.url,
-#         cf_dims_dict=cf_dims_dict,
-#         store_paths=store_paths,
-#         return_state=True,
-#     )
-#     copy_staging_to_production(store_paths)
-
-#     if rechunk_state.conclusion == 'successful':
-#         return {
-#             "status": "completed",
-#             "conclusion": "successful",
-#             "rechunked_url": store_paths['production_store'],
-#         }
-#     else:
-#         return {
-#             "status": "completed",
-#             "conclusion": "failed",
-#             "error_message": str(rechunk_state.message),
-#         }
-
-
-# # Note: snippet below is for end2end testing
-# # from app.helpers import sanitize_url
-
-# # url = "s3://carbonplan-scratch/gpcp_100MB.zarr"
-# # sanitized_url = sanitize_url(url)
-# # result = rechunk_flow(sanitized_url)
+    return s3_to_https(s3_url=store_paths['prod_store'])

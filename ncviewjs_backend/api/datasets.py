@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlmodel import Session, select
 
 from ..database import get_session
-from ..dataset_validation import _register_dataset
+from ..dataset_processing import process_dataset
 from ..helpers import sanitize_url
 from ..logging import get_logger
 from ..models.dataset import Dataset, DatasetRead, DatasetWithRechunkRuns, RechunkRun
@@ -71,7 +71,7 @@ def register_dataset(
         logger.debug(f"Create Dataset: {dataset}")
 
     background_tasks.add_task(
-        _register_dataset, dataset=dataset, rechunk_run=rechunk_run, session=session
+        process_dataset, dataset=dataset, rechunk_run=rechunk_run, session=session
     )
     return dataset
 
