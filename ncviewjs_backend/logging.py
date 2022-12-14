@@ -1,10 +1,16 @@
 import logging
-
-from .config import get_settings
+import sys
 
 
 def get_logger() -> logging.Logger:
-    settings = get_settings()
-    if settings.environment == 'prod':
-        return logging.getLogger("gunicorn")
-    return logging.getLogger("uvicorn")
+    logger = logging.getLogger("ncviewjs-backend")
+
+    handler = logging.StreamHandler(stream=sys.stdout)
+    handler.setFormatter(
+        logging.Formatter("%(levelname)s:     %(asctime)s  - %(name)s - %(message)s"),
+    )
+    if logger.hasHandlers():
+        logger.handlers.clear()
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+    return logger
