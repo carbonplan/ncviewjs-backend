@@ -10,14 +10,18 @@ import zarr
 
 from ..config import get_settings
 from ..helpers import s3_to_https
+from ..logging import get_logger
 from ..models.dataset import Dataset
 from .utils import determine_chunk_size
+
+logger = get_logger()
 
 
 def copy_staging_to_production(*, staging_store: pydantic.AnyUrl, prod_store: pydantic.AnyUrl):
     transfer_str = f"skyplane cp -r -y {staging_store} {prod_store}"
-    print(transfer_str)
-    subprocess.check_output(transfer_str, shell=True)
+    logger.info(f"Copying staging store to production store: {transfer_str}")
+    subprocess.check_call(transfer_str, shell=True)
+    logger.info("Successfully copied staging store to production store")
 
 
 def dataset_is_valid(*, zarr_store_url: pydantic.HttpUrl):
@@ -66,7 +70,7 @@ def rechunk_dataset(
     )
 
     ds = xr.open_dataset(zarr_store_url, engine='zarr', chunks={}, decode_cf=False)
-    print(ds)
+    logger.info(f'Opened dataset: {ds}')
     group = zarr.open_consolidated(zarr_store_url)
 
     chunks_dict = {}
@@ -86,7 +90,7 @@ def rechunk_dataset(
 
         chunks_dict[variable] = result
 
-    print(f'Chunks: {chunks_dict}')
+    logger.info(f'Chunks: {chunks_dict}')
 
     storage_options = {
         'anon': False,
@@ -107,10 +111,10 @@ def rechunk_dataset(
     dataset_is_valid(zarr_store_url=store_paths['staging_store'])
 
 
-def generate_stores(*, key: str, bucket: str, md5_id: str):
+def generate_stores(*, key: str, bucket: str):
     settings = get_settings()
     # TODO: use a better naming scheme
-    store_suffix = f"{uuid.uuid1()}-{md5_id}.zarr"
+    store_suffix = f"{uuid.uuid1()}/{bucket}/{key}"
     tmp_store = f"{settings.scratch_bucket}/{store_suffix}"
     staging_store = f"{settings.staging_bucket}/{store_suffix}"
     prod_store = f"{settings.production_bucket}/{store_suffix}"
@@ -130,7 +134,7 @@ def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
     pydantic.HttpUrl
         https url to rechunked target store
     """
-    store_paths = generate_stores(key=dataset.key, bucket=dataset.bucket, md5_id=dataset.md5_id)
+    store_paths = generate_stores(key=dataset.key, bucket=dataset.bucket)
     rechunk_dataset(
         zarr_store_url=dataset.url, cf_axes_dict=dataset.cf_axes, store_paths=store_paths
     )
