@@ -19,6 +19,15 @@ def copy_staging_to_production(*, staging_store: pydantic.AnyUrl, prod_store: py
     subprocess.check_output(transfer_str, shell=True)
 
 
+def dataset_is_valid(*, zarr_store_url: pydantic.HttpUrl):
+    """Checks that rechunked dataset is valid."""
+    try:
+        with xr.open_dataset(zarr_store_url, engine='zarr', chunks={}, decode_cf=False):
+            pass
+    except Exception as exc:
+        raise RuntimeError(f'Error opening rechunked dataset: {zarr_store_url}') from exc
+
+
 def rechunk_dataset(
     *,
     zarr_store_url: str,
@@ -84,11 +93,16 @@ def rechunk_dataset(
     array_plan = rechunker.rechunk(group, chunks_dict, max_mem, tgt_mapper, temp_store=tmp_mapper)
     array_plan.execute()
 
-    print(f'Paths: {store_paths}')
+    # Consolidate metadata
+    zarr.consolidate_metadata(store_paths['staging_store'])
+
+    # Check that rechunked dataset is valid
+    dataset_is_valid(zarr_store_url=store_paths['staging_store'])
 
 
 def generate_stores(*, key: str, bucket: str, md5_id: str):
     settings = get_settings()
+    # TODO: use a better naming scheme
     store_suffix = f"{uuid.uuid1()}-{md5_id}.zarr"
     tmp_store = f"{settings.scratch_bucket}/{store_suffix}"
     staging_store = f"{settings.staging_bucket}/{store_suffix}"
@@ -106,15 +120,16 @@ def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
 
     Returns
     -------
-    dict
-        rechunking status
+    pydantic.HttpUrl
+        https url to rechunked target store
     """
     store_paths = generate_stores(key=dataset.key, bucket=dataset.bucket, md5_id=dataset.md5_id)
     rechunk_dataset(
         zarr_store_url=dataset.url, cf_axes_dict=dataset.cf_axes, store_paths=store_paths
     )
 
-    # TODO: add a check to make sure the rechunked dataset is valid
-    # TODO: copy store from staging to production
+    copy_staging_to_production(
+        staging_store=store_paths['staging_store'], prod_store=store_paths['prod_store']
+    )
 
     return s3_to_https(s3_url=store_paths['prod_store'])
