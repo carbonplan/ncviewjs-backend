@@ -110,10 +110,10 @@ def rechunk_dataset(
     dataset_is_valid(zarr_store_url=store_paths['staging_store'])
 
 
-def generate_stores(*, key: str, bucket: str, md5_id: str):
+def generate_stores(*, key: str, bucket: str):
     settings = get_settings()
     # TODO: use a better naming scheme
-    store_suffix = f"{uuid.uuid1()}-{md5_id}.zarr"
+    store_suffix = f"{uuid.uuid1()}/{bucket}/{key}.zarr"
     tmp_store = f"{settings.scratch_bucket}/{store_suffix}"
     staging_store = f"{settings.staging_bucket}/{store_suffix}"
     prod_store = f"{settings.production_bucket}/{store_suffix}"
