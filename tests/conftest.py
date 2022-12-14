@@ -8,7 +8,13 @@ from ncviewjs_backend.main import create_application
 
 
 def get_settings_override():
-    return Settings(testing=1, database_url=os.environ.get("DATABASE_URL"))
+    return Settings(
+        testing=1,
+        database_url=os.environ.get("DATABASE_URL"),
+        scratch_bucket="s3://carbonplan-scratch/temp",
+        staging_bucket="s3://carbonplan-scratch/staging",
+        production_bucket="s3://carbonplan-scratch/production",
+    )
 
 
 @pytest.fixture(scope="module")
