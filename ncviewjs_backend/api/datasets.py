@@ -1,4 +1,5 @@
 import contextlib
+import datetime
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm.exc import NoResultFound
@@ -30,6 +31,7 @@ def register_dataset(
 
     with contextlib.suppress(NoResultFound):
         dataset = session.exec(select(Dataset).where(Dataset.md5_id == sanitized_url.md5_id)).one()
+
         logger.info(f"Dataset already stored: {dataset.url}")
         dataset_exists = True
     if dataset_exists and not payload.force:
@@ -83,6 +85,11 @@ def get_dataset_by_id(id: int, session: Session = Depends(get_session)) -> Datas
     dataset = session.get(Dataset, id)
     if dataset is None:
         raise HTTPException(status_code=404, detail="Dataset not found")
+
+    dataset.last_accessed = datetime.datetime.now(datetime.timezone.utc)
+    session.add(dataset)
+    session.commit()
+    session.refresh(dataset)
 
     return dataset
 
