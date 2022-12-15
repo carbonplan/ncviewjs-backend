@@ -143,4 +143,7 @@ def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
         staging_store=store_paths['staging_store'], prod_store=store_paths['prod_store']
     )
 
+    # check if prod_store is valid
+    dataset_is_valid(zarr_store_url=store_paths['prod_store'])
+
     return s3_to_https(s3_url=store_paths['prod_store'])
