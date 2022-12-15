@@ -1,6 +1,6 @@
+import datetime
 import os
 import subprocess
-import uuid
 
 import fsspec
 import pydantic
@@ -114,7 +114,8 @@ def rechunk_dataset(
 def generate_stores(*, key: str, bucket: str):
     settings = get_settings()
     # TODO: use a better naming scheme
-    store_suffix = f"{uuid.uuid1()}/{bucket}/{key}"
+    now = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H-%M-%S')
+    store_suffix = f"{now}/{bucket}/{key}"
     tmp_store = f"{settings.scratch_bucket}/{store_suffix}"
     staging_store = f"{settings.staging_bucket}/{store_suffix}"
     prod_store = f"{settings.production_bucket}/{store_suffix}"
