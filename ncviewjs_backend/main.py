@@ -1,6 +1,9 @@
+import subprocess
+
 from fastapi import FastAPI
 
 from .api import datasets, ping, runs
+from .config import get_settings
 from .logging import get_logger
 
 logger = get_logger()
@@ -19,6 +22,13 @@ app = create_application()
 
 @app.on_event("startup")
 async def startup_event():
+    settings = get_settings()
+    if settings.environment == 'prod':
+        logger.info("Initializing skyplane...")
+        subprocess.check_call(
+            "skyplane init -y --disable-config-azure --disable-config-gcp", shell=True
+        )
+        logger.info("Successfully initialized skyplane")
     logger.info("Application startup...")
 
 

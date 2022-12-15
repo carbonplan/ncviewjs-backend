@@ -6,6 +6,7 @@ dependencies:
   - adlfs
   - alembic >= 1.7.5
   - asyncpg>=0.27
+  - awscli
   - boto3
   - cftime
   - cf_xarray
