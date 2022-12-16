@@ -1,3 +1,4 @@
+import datetime
 import enum
 
 import pydantic
@@ -28,6 +29,10 @@ class DatasetBase(SQLModel):
     key: str
     bucket: str
     cf_axes: dict[str, dict] | None = Field(default={}, sa_column=Column(JSON))
+    last_accessed: datetime.datetime = Field(
+        default_factory=datetime.datetime.utcnow, nullable=False
+    )
+    size: str | None = None
 
 
 class Dataset(DatasetBase, table=True):
@@ -44,6 +49,8 @@ class RechunkRunBase(SQLModel):
     status: Status = Status.queued
     outcome: Outcome | None = None
     rechunked_dataset: pydantic.HttpUrl | None = None
+    start_time: datetime.datetime | None = None
+    end_time: datetime.datetime | None = None
 
 
 class RechunkRun(RechunkRunBase, table=True):

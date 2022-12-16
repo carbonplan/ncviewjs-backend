@@ -8,17 +8,17 @@ urls = [
 ]
 
 
-columns = {"id", "url", "bucket", "key", "protocol", "md5_id", "cf_axes"}
+columns = {"id", "url", "bucket", "key", "protocol", "md5_id", "cf_axes", "last_accessed", "size"}
 
 
 @pytest.mark.parametrize(
-    "url",
-    urls,
+    "url,force",
+    [(url, force) for url in urls for force in [True, False]],
 )
-def test_put_store(test_app_with_db, url):
+def test_put_store(test_app_with_db, url, force):
     response = test_app_with_db.put(
         '/datasets/',
-        content=json.dumps({"url": url}),
+        content=json.dumps({"url": url, "force": force}),
     )
     assert response.status_code == 201
     data = response.json()

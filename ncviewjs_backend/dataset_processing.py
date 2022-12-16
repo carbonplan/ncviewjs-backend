@@ -1,3 +1,5 @@
+import traceback
+
 import dask.utils
 import xarray as xr
 from sqlmodel import Session
@@ -51,19 +53,23 @@ def validate_zarr_store(url: str) -> None:
         raise UnableToOpenDatasetError(f'Unable to open Zarr store: {url} due to {exc}') from exc
 
 
-def retrieve_CF_axes(url: str) -> dict[str, dict[str, str]]:
+def retrieve_CF_axes(ds: xr.Dataset) -> dict[str, dict[str, str]]:
     """Retrieve the CF dimensions from the dataset"""
     import cf_xarray  # noqa
 
-    with xr.open_dataset(url, engine='zarr', chunks={}, decode_cf=False) as ds:
+    results = {}
+    for variable in ds.data_vars:
+        axes = ds[variable].cf.axes
+        for key, value in axes.items():
+            axes[key] = value[0]
+        results[variable] = axes
+    return results
 
-        results = {}
-        for variable in ds.data_vars:
-            axes = ds[variable].cf.axes
-            for key, value in axes.items():
-                axes[key] = value[0]
-            results[variable] = axes
-        return results
+
+def get_dataset_info(url: str) -> dict[str, str]:
+    """Get the dataset info from the store"""
+    with xr.open_dataset(url, engine='zarr', chunks={}, decode_cf=False) as ds:
+        return {'size': dask.utils.format_bytes(ds.nbytes), 'cf_axes': retrieve_CF_axes(ds)}
 
 
 def process_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Session) -> None:
@@ -75,7 +81,7 @@ def process_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Sessi
         # update the rechunk run in the database
         rechunk_run.status = "completed"
         rechunk_run.outcome = "failure"
-        rechunk_run.error_message = str(exc)
+        rechunk_run.error_message = traceback.format_exc()
         _update_entry_in_db(session=session, item=rechunk_run)
         logger.error(f'Rechunking run: {rechunk_run}\nfailed with error: {exc}')
         raise RuntimeError('Dataset processing failed.') from exc
@@ -83,20 +89,24 @@ def process_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Sessi
 
 def validate_and_rechunk(*, dataset: Dataset, session: Session, rechunk_run: RechunkRun):
     validate_zarr_store(dataset.url)
+
     # Update the dataset in the database with the CF axes
-    cf_axes = retrieve_CF_axes(dataset.url)
-    dataset.cf_axes = cf_axes
+    ds_info = get_dataset_info(dataset.url)
+    dataset.cf_axes = ds_info['cf_axes']
+    dataset.size = ds_info['size']
     _update_entry_in_db(session=session, item=dataset)
     logger.info(f'Validation of store: {dataset.url} succeeded')
 
     # Rechunk the dataset
-    production_store = rechunk_flow(dataset=dataset)
+    data = rechunk_flow(dataset=dataset)
     logger.info(f'Rechunking of store: {dataset.url} succeeded')
 
     # Update the dataset in the database with the production store
     rechunk_run.status = "completed"
     rechunk_run.outcome = "success"
-    rechunk_run.rechunked_dataset = production_store
+    rechunk_run.rechunked_dataset = data['rechunked_dataset']
+    rechunk_run.start_time = data['start_time']
+    rechunk_run.end_time = data['end_time']
     _update_entry_in_db(session=session, item=rechunk_run)
     logger.info(f'Updating of dataset: {dataset} succeeded')
 

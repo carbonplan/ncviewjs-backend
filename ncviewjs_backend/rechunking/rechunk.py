@@ -94,8 +94,8 @@ def rechunk_dataset(
 
     storage_options = {
         'anon': False,
-        'key': os.environ['AWS_ACCESS_KEY_ID'],
-        'secret': os.environ['AWS_SECRET_ACCESS_KEY'],
+        'key': os.environ.get('AWS_ACCESS_KEY_ID'),
+        'secret': os.environ.get('AWS_SECRET_ACCESS_KEY'),
     }
 
     tmp_mapper = fsspec.get_mapper(store_paths['temp_store'], **storage_options)
@@ -106,9 +106,6 @@ def rechunk_dataset(
 
     # Consolidate metadata
     zarr.consolidate_metadata(store_paths['staging_store'])
-
-    # Check that rechunked dataset is valid
-    dataset_is_valid(zarr_store_url=store_paths['staging_store'])
 
 
 def generate_stores(*, key: str, bucket: str):
@@ -122,7 +119,7 @@ def generate_stores(*, key: str, bucket: str):
     return {'temp_store': tmp_store, 'staging_store': staging_store, 'prod_store': prod_store}
 
 
-def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
+def rechunk_flow(*, dataset: Dataset) -> dict[str, str]:
     """Rechunks zarr dataset to match chunk schema required by carbonplan web-viewer.
 
     Parameters
@@ -136,9 +133,14 @@ def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
         https url to rechunked target store
     """
     store_paths = generate_stores(key=dataset.key, bucket=dataset.bucket)
+    start_time = datetime.datetime.now(datetime.timezone.utc)
     rechunk_dataset(
         zarr_store_url=dataset.url, cf_axes_dict=dataset.cf_axes, store_paths=store_paths
     )
+    end_time = datetime.datetime.now(datetime.timezone.utc)
+
+    # Check that rechunked dataset is valid
+    dataset_is_valid(zarr_store_url=store_paths['staging_store'])
 
     copy_staging_to_production(
         staging_store=store_paths['staging_store'], prod_store=store_paths['prod_store']
@@ -147,4 +149,8 @@ def rechunk_flow(*, dataset: Dataset) -> pydantic.HttpUrl:
     # check if prod_store is valid
     dataset_is_valid(zarr_store_url=store_paths['prod_store'])
 
-    return s3_to_https(s3_url=store_paths['prod_store'])
+    return {
+        'rechunked_dataset': s3_to_https(s3_url=store_paths['prod_store']),
+        'start_time': start_time,
+        'end_time': end_time,
+    }
