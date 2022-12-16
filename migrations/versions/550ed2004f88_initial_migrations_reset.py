@@ -1,8 +1,8 @@
 """initial migrations: reset
 
-Revision ID: c3b4eab1edf4
+Revision ID: 550ed2004f88
 Revises: 
-Create Date: 2022-12-13 09:19:49.770089
+Create Date: 2022-12-15 21:02:59.355303
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision = 'c3b4eab1edf4'
+revision = '550ed2004f88'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,6 +26,8 @@ def upgrade():
     sa.Column('protocol', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('key', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('bucket', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('last_accessed', sa.DateTime(), nullable=True),
+    sa.Column('size', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
@@ -34,6 +36,8 @@ def upgrade():
     sa.Column('status', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('outcome', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('rechunked_dataset', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('start_time', sa.DateTime(), nullable=True),
+    sa.Column('end_time', sa.DateTime(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('dataset_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['dataset_id'], ['dataset.id'], ),
