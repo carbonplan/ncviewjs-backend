@@ -98,13 +98,15 @@ def validate_and_rechunk(*, dataset: Dataset, session: Session, rechunk_run: Rec
     logger.info(f'Validation of store: {dataset.url} succeeded')
 
     # Rechunk the dataset
-    production_store = rechunk_flow(dataset=dataset)
+    data = rechunk_flow(dataset=dataset)
     logger.info(f'Rechunking of store: {dataset.url} succeeded')
 
     # Update the dataset in the database with the production store
     rechunk_run.status = "completed"
     rechunk_run.outcome = "success"
-    rechunk_run.rechunked_dataset = production_store
+    rechunk_run.rechunked_dataset = data['rechunked_dataset']
+    rechunk_run.start_time = data['start_time']
+    rechunk_run.end_time = data['end_time']
     _update_entry_in_db(session=session, item=rechunk_run)
     logger.info(f'Updating of dataset: {dataset} succeeded')
 

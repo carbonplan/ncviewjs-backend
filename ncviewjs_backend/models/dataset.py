@@ -49,6 +49,8 @@ class RechunkRunBase(SQLModel):
     status: Status = Status.queued
     outcome: Outcome | None = None
     rechunked_dataset: pydantic.HttpUrl | None = None
+    start_time: datetime.datetime | None = None
+    end_time: datetime.datetime | None = None
 
 
 class RechunkRun(RechunkRunBase, table=True):
