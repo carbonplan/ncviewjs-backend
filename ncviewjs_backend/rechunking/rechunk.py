@@ -94,8 +94,8 @@ def rechunk_dataset(
 
     storage_options = {
         'anon': False,
-        'key': os.environ['AWS_ACCESS_KEY_ID'],
-        'secret': os.environ['AWS_SECRET_ACCESS_KEY'],
+        'key': os.environ.get('AWS_ACCESS_KEY_ID'),
+        'secret': os.environ.get('AWS_SECRET_ACCESS_KEY'),
     }
 
     tmp_mapper = fsspec.get_mapper(store_paths['temp_store'], **storage_options)

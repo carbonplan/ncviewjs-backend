@@ -1,3 +1,5 @@
+import traceback
+
 import dask.utils
 import xarray as xr
 from sqlmodel import Session
@@ -79,7 +81,7 @@ def process_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Sessi
         # update the rechunk run in the database
         rechunk_run.status = "completed"
         rechunk_run.outcome = "failure"
-        rechunk_run.error_message = str(exc)
+        rechunk_run.error_message = traceback.format_exc()
         _update_entry_in_db(session=session, item=rechunk_run)
         logger.error(f'Rechunking run: {rechunk_run}\nfailed with error: {exc}')
         raise RuntimeError('Dataset processing failed.') from exc
