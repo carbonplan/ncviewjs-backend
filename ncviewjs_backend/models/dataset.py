@@ -29,8 +29,8 @@ class DatasetBase(SQLModel):
     key: str
     bucket: str
     cf_axes: dict[str, dict] | None = Field(default={}, sa_column=Column(JSON))
-    last_accessed: datetime.datetime = Field(
-        default_factory=datetime.datetime.utcnow, nullable=False
+    last_accessed: datetime.datetime | None = Field(
+        default_factory=datetime.datetime.utcnow, nullable=True
     )
     size: str | None = None
 
