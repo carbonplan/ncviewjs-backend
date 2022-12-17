@@ -7,7 +7,6 @@ urls = [
     "s3://carbonplan-data-viewer/demo/AGDC_100MB.zarr",
 ]
 
-
 columns = {"id", "url", "bucket", "key", "protocol", "md5_id", "cf_axes", "last_accessed", "size"}
 
 
@@ -29,7 +28,8 @@ def test_put_store(test_app_with_db, url, force):
     "url",
     urls,
 )
-def test_get_dataset(test_app_with_db, url):
+@pytest.mark.parametrize("latest", [True, False])
+def test_get_dataset(test_app_with_db, url, latest):
 
     response = test_app_with_db.put(
         '/datasets/',
@@ -37,7 +37,7 @@ def test_get_dataset(test_app_with_db, url):
     )
 
     data = response.json()
-    response = test_app_with_db.get(f"/datasets/{data['id']}")
+    response = test_app_with_db.get(f"/datasets/{data['id']}?latest={latest}")
     assert response.status_code == 200
     data = response.json()
     assert columns.issubset(set(data.keys()))

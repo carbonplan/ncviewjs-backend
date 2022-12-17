@@ -1,7 +1,7 @@
 import contextlib
 import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlalchemy.orm.exc import NoResultFound
 from sqlmodel import Session, select
 
@@ -79,7 +79,14 @@ def register_dataset(
 
 
 @router.get("/{id}", response_model=DatasetWithRechunkRuns, summary="Get a dataset by ID")
-def get_dataset_by_id(id: int, session: Session = Depends(get_session)) -> Dataset:
+def get_dataset_by_id(
+    id: int,
+    latest: bool = Query(
+        default=True,
+        description='Whether to filter out rechunk runs and return the latest run only',
+    ),
+    session: Session = Depends(get_session),
+) -> Dataset:
     """Get a dataset from the database."""
     logger.info(f"Getting dataset: {id}")
     dataset = session.get(Dataset, id)
@@ -90,6 +97,10 @@ def get_dataset_by_id(id: int, session: Session = Depends(get_session)) -> Datas
     session.add(dataset)
     session.commit()
     session.refresh(dataset)
+
+    if latest and len(dataset.rechunk_runs) > 1:
+        logger.info("Filtering out rechunk runs and returning the latest run only")
+        dataset.rechunk_runs = [max(dataset.rechunk_runs, key=lambda x: x.id)]
 
     return dataset
 
