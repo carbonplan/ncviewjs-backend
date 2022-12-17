@@ -3,8 +3,11 @@ import json
 import pytest
 
 urls = [
-    "s3://carbonplan-data-viewer/demo/gpcp_100MB.zarr",
-    "s3://carbonplan-data-viewer/demo/AGDC_100MB.zarr",
+    # "s3://carbonplan-data-viewer/demo/gpcp_100MB.zarr",
+    # "s3://carbonplan-data-viewer/demo/AGDC_100MB.zarr",
+    "https://storage.googleapis.com/carbonplan-maps/ncview/demo/single_timestep/sample_australia_cordex_data.zarr",  # noqa
+    "https://cmip6downscaling.blob.core.windows.net/vis/article/fig1/regions/central-america/gcm-tasmax.zarr",  # noqa
+    "gs://carbonplan-maps/ncview/demo/single_timestep/air_temperature.zarr",
 ]
 
 columns = {"id", "url", "bucket", "key", "protocol", "md5_id", "cf_axes", "last_accessed", "size"}
