@@ -16,7 +16,7 @@ router = APIRouter()
 logger = get_logger()
 
 
-@router.put("/", response_model=DatasetRead, status_code=201, summary="Register a dataset")
+@router.post("/", response_model=DatasetRead, status_code=201, summary="Register a dataset")
 def register_dataset(
     payload: StorePayload,
     background_tasks: BackgroundTasks,
