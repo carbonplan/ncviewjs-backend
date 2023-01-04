@@ -1,6 +1,8 @@
 import subprocess
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from .api import datasets, ping, runs
 from .config import get_settings
@@ -11,6 +13,19 @@ logger = get_logger()
 
 def create_application() -> FastAPI:
     application = FastAPI()
+    if get_settings().environment == "prod":
+        application.add_middleware(HTTPSRedirectMiddleware)
+    # TODO: figure out how to set origins to only the frontend domain
+    # in the meantime, we can allow everything.
+    # in the future we can set origins to any port on localhost and vercel domains
+    origins = ["*"]  # is this dangerous? I don't think so, but I'm not sure.
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     application.include_router(ping.router, tags=["ping"])
     application.include_router(datasets.router, tags=["datasets"], prefix="/datasets")
     application.include_router(runs.router, tags=["runs"], prefix="/runs")
