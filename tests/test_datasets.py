@@ -17,8 +17,8 @@ columns = {"id", "url", "bucket", "key", "protocol", "md5_id", "cf_axes", "last_
     "url,force",
     [(url, force) for url in urls for force in [True, False]],
 )
-def test_put_store(test_app_with_db, url, force):
-    response = test_app_with_db.put(
+def test_post_store(test_app_with_db, url, force):
+    response = test_app_with_db.post(
         '/datasets/',
         content=json.dumps({"url": url, "force": force}),
     )
@@ -34,7 +34,7 @@ def test_put_store(test_app_with_db, url, force):
 @pytest.mark.parametrize("latest", [True, False])
 def test_get_dataset(test_app_with_db, url, latest):
 
-    response = test_app_with_db.put(
+    response = test_app_with_db.post(
         '/datasets/',
         content=json.dumps({"url": url}),
     )
