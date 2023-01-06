@@ -58,7 +58,7 @@ def retrieve_CF_axes(ds: xr.Dataset) -> dict[str, dict[str, str]]:
     import cf_xarray  # noqa
 
     results = {}
-    for variable in ds.data_vars:
+    for variable in ds.variables:
         axes = ds[variable].cf.axes
         for key, value in axes.items():
             axes[key] = value[0]
