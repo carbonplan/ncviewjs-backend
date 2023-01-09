@@ -8,7 +8,7 @@ from .logging import get_logger
 from .models.dataset import Dataset, RechunkRun
 from .rechunking.rechunk import rechunk_flow
 
-DATASET_SIZE_THRESHOLD = 7e9
+DATASET_SIZE_THRESHOLD = 60e9
 
 logger = get_logger()
 
@@ -81,7 +81,8 @@ def process_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Sessi
         # update the rechunk run in the database
         rechunk_run.status = "completed"
         rechunk_run.outcome = "failure"
-        rechunk_run.error_message = traceback.format_exc()
+        trace = traceback.format_exc()
+        rechunk_run.error_message = trace.splitlines()[-1]
         _update_entry_in_db(session=session, item=rechunk_run)
         logger.error(f'Rechunking run: {rechunk_run}\nfailed with error: {exc}')
         raise RuntimeError('Dataset processing failed.') from exc
