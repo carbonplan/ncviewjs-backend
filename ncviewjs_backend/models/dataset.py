@@ -46,6 +46,7 @@ class DatasetRead(DatasetBase):
 
 class RechunkRunBase(SQLModel):
     error_message: str | None
+    error_message_traceback: str | None
     status: Status = Status.queued
     outcome: Outcome | None = None
     rechunked_dataset: pydantic.HttpUrl | None = None
