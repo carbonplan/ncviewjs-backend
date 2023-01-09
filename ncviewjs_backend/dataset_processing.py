@@ -91,13 +91,13 @@ def validate_and_rechunk(*, dataset: Dataset, session: Session, rechunk_run: Rec
     """Validate the store and rechunk the dataset"""
     rechunk_run.status = 'in_progress'
     _update_entry_in_db(session=session, item=rechunk_run)
-    validate_zarr_store(dataset.url)
 
     # Update the dataset in the database with the CF axes
     ds_info = get_dataset_info(dataset.url)
     dataset.cf_axes = ds_info['cf_axes']
     dataset.size = ds_info['size']
     _update_entry_in_db(session=session, item=dataset)
+    validate_zarr_store(dataset.url)
     logger.info(f'Validation of store: {dataset.url} succeeded')
 
     # Rechunk the dataset
