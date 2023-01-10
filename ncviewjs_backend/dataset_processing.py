@@ -1,3 +1,4 @@
+import subprocess
 import traceback
 
 import dask.utils
@@ -6,7 +7,6 @@ from sqlmodel import Session
 
 from .logging import get_logger
 from .models.dataset import Dataset, RechunkRun
-from .rechunking.rechunk import rechunk_flow
 
 DATASET_SIZE_THRESHOLD = 60e9
 
@@ -103,16 +103,10 @@ def validate_and_rechunk(*, dataset: Dataset, session: Session, rechunk_run: Rec
     logger.info(f'Validation of store: {dataset.url} succeeded')
 
     # Rechunk the dataset
-    data = rechunk_flow(dataset=dataset)
-    logger.info(f'Rechunking of store: {dataset.url} succeeded')
+    command = f'prefect deployment run rechunk/ncviewjs --param store_url={dataset.url}'
+    output = subprocess.check_output(command, shell=True).decode('utf-8')
 
-    # Update the dataset in the database with the production store
-    rechunk_run.status = "completed"
-    rechunk_run.outcome = "success"
-    rechunk_run.rechunked_dataset = data['rechunked_dataset']
-    rechunk_run.start_time = data['start_time']
-    rechunk_run.end_time = data['end_time']
-    _update_entry_in_db(session=session, item=rechunk_run)
+    logger.info(f'Output of prefect deployment run: \n{output}')
     logger.info(f'Updating of dataset: {dataset} succeeded')
 
 

@@ -71,3 +71,23 @@ class RechunkRunWithoutDataset(RechunkRunBase):
 
 class DatasetWithRechunkRuns(DatasetRead):
     rechunk_runs: list[RechunkRunWithoutDataset] | None = []
+
+
+class RechunkRunPayload(pydantic.BaseModel):
+    start_time: datetime.datetime | None
+    end_time: datetime.datetime | None
+    rechunked_dataset: pydantic.HttpUrl | None
+    error_message: str | None
+    error_message_traceback: str | None
+    status: Status | None
+    outcome: Outcome | None
+
+    @pydantic.root_validator(pre=True)
+    def update_dataset_url(cls, values) -> dict:
+        from ..helpers import s3_to_https
+
+        for item in {'rechunked_dataset'}:
+            if values[item] is not None and values[item].startswith('s3://'):
+                values[item] = s3_to_https(s3_url=values[item])
+
+        return values
