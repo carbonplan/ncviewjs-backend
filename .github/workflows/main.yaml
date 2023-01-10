@@ -65,6 +65,11 @@ jobs:
           extra-specs: |
             python="3.10"
 
+      - name: Prefect Cloud login
+        run: |
+          prefect config set PREFECT_API_KEY=${{ secrets.PREFECT_API_KEY }}
+          prefect config set PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}
+
       - name: Skyplane init
         run: |
           skyplane init -y --disable-config-azure --disable-config-gcp
