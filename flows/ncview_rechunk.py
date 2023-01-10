@@ -162,8 +162,6 @@ def finalize(
     url: pydantic.AnyHttpUrl,
 ):
     logger = prefect.get_run_logger()
-    logger.info('ncview rechunking is done 🚀')
-    logger.info('Total time: %s', end_time - start_time)
 
     # Send a post request to ncview-backend.fly.dev/datasets/ with the start and end time
     # to trigger a reindexing of the dataset
@@ -176,12 +174,18 @@ def finalize(
         'outcome': "success",
     }
 
-    requests.patch(
-        url,
-        json=data,
-    )
+    try:
+        requests.patch(
+            url,
+            json=data,
+        )
+        logger.info(f'Sent request to {url} 🚀 with data: {data}')
 
-    logger.info(f'Sent request to {url} 🚀 with data: {data}')
+    except Exception as exc:
+        logger.info(f'Failed to send request to {url} with data: {data} with error: {exc}')
+
+    logger.info('ncview rechunking is done 🚀')
+    logger.info('Total time: %s', end_time - start_time)
 
 
 @prefect.flow(description='Rechunking flow for ncviewjs')
