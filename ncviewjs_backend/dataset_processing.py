@@ -103,12 +103,14 @@ def validate_and_rechunk(*, dataset: Dataset, session: Session, rechunk_run: Rec
     logger.info(f'Validation of store: {dataset.url} succeeded')
 
     # Rechunk the dataset
-    command = f"""
-    prefect deployment run rechunk/ncviewjs
-        --param store_url={dataset.url}
-        --param key={dataset.key}
-        --param bucket={dataset.bucket}
-        --param rechunk_run_id={rechunk_run.id}""".strip()
+    command = (
+        f"prefect deployment run rechunk/ncviewjs "
+        f"--param store_url={dataset.url} "
+        f"--param key={dataset.key} "
+        f"--param bucket={dataset.bucket} "
+        f"--param rechunk_run_id={rechunk_run.id}"
+    )
+
     output = subprocess.check_output(command, shell=True).decode('utf-8')
 
     logger.info(f'Output of prefect deployment run: \n{output}')
