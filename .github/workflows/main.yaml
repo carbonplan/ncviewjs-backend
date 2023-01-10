@@ -70,9 +70,10 @@ jobs:
           prefect config set PREFECT_API_KEY=${{ secrets.PREFECT_API_KEY }}
           prefect config set PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}
 
-      - name: Skyplane init
+      - name: Register workflow
         run: |
-          skyplane init -y --disable-config-azure --disable-config-gcp
+          cd flows
+          python submit.py
 
       - name: Database migration
         run: |
