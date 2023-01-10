@@ -65,9 +65,15 @@ jobs:
           extra-specs: |
             python="3.10"
 
-      - name: Skyplane init
+      - name: Prefect Cloud login
         run: |
-          skyplane init -y --disable-config-azure --disable-config-gcp
+          prefect config set PREFECT_API_KEY=${{ secrets.PREFECT_API_KEY }}
+          prefect config set PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}
+
+      - name: Register workflow
+        run: |
+          cd flows
+          python submit.py
 
       - name: Database migration
         run: |

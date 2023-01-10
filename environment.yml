@@ -18,12 +18,12 @@ dependencies:
   - gunicorn
   - psycopg2
   - python=3.10
-  - rechunker
   - s3fs
   - sqlmodel >= 0.0.8
   - universal_pathlib >=0.0.21
   - uvicorn
   - xarray >=2022.11.0
   - zarr >=2.13
+  - prefect
   - pip:
-      - skyplane
+      - prefect-aws

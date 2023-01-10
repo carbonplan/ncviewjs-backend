@@ -1,12 +1,13 @@
+import subprocess
 import traceback
 
 import dask.utils
 import xarray as xr
 from sqlmodel import Session
 
+from .config import get_settings
 from .logging import get_logger
 from .models.dataset import Dataset, RechunkRun
-from .rechunking.rechunk import rechunk_flow
 
 DATASET_SIZE_THRESHOLD = 60e9
 
@@ -103,16 +104,24 @@ def validate_and_rechunk(*, dataset: Dataset, session: Session, rechunk_run: Rec
     logger.info(f'Validation of store: {dataset.url} succeeded')
 
     # Rechunk the dataset
-    data = rechunk_flow(dataset=dataset)
-    logger.info(f'Rechunking of store: {dataset.url} succeeded')
+    settings = get_settings()
+    endpoint = (
+        'https://ncview-backend.fly.dev/runs'
+        if settings.environment == 'prod'
+        else 'http://localhost:8000/runs'
+    )
+    command = (
+        f"prefect deployment run rechunk/ncviewjs "
+        f"--param store_url={dataset.url} "
+        f"--param key={dataset.key} "
+        f"--param bucket={dataset.bucket} "
+        f"--param endpoint={endpoint} "
+        f"--param rechunk_run_id={rechunk_run.id}"
+    )
 
-    # Update the dataset in the database with the production store
-    rechunk_run.status = "completed"
-    rechunk_run.outcome = "success"
-    rechunk_run.rechunked_dataset = data['rechunked_dataset']
-    rechunk_run.start_time = data['start_time']
-    rechunk_run.end_time = data['end_time']
-    _update_entry_in_db(session=session, item=rechunk_run)
+    output = subprocess.check_output(command, shell=True).decode('utf-8')
+
+    logger.info(f'Output of prefect deployment run: \n{output}')
     logger.info(f'Updating of dataset: {dataset} succeeded')
 
 
