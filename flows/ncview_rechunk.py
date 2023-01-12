@@ -108,7 +108,7 @@ def process_dataset(
                 result[value] = min(spatial_chunk_square_size, sizes[value])
         for dim in variable_dims:
             if dim not in result.keys():
-                result[dim] = -1
+                result[dim] = sizes[dim]
 
         chunks_dict[variable] = result
 
@@ -232,11 +232,11 @@ def rechunk(
     )
 
 
-if __name__ == '__main__':
-    rechunk(
-        store_url="s3://carbonplan-data-viewer/demo/gpcp_180_180_chunks.zarr",
-        key="gpcp_180_180_chunks.zarr",
-        bucket="demo",
-        rechunk_run_id=1,
-        endpoint="http://localhost:8000/runs",
-    )
+# if __name__ == '__main__':
+#     rechunk(
+#         store_url="s3://carbonplan-data-viewer/demo/gpcp_180_180_chunks.zarr",
+#         key="gpcp_180_180_chunks.zarr",
+#         bucket="demo",
+#         rechunk_run_id=1,
+#         endpoint="http://localhost:8000/runs",
+#     )
