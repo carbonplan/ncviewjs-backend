@@ -108,7 +108,7 @@ def process_dataset(
                 result[value] = min(spatial_chunk_square_size, sizes[value])
         for dim in variable_dims:
             if dim not in result.keys():
-                result[dim] = -1
+                result[dim] = sizes[dim]
 
         chunks_dict[variable] = result
 
