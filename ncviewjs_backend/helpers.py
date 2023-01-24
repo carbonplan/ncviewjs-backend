@@ -6,7 +6,7 @@ import upath
 from .schemas.dataset import SanitizedURL
 
 
-def s3_to_https(*, s3_url: pydantic.AnyUrl, region: str = 'us-west-2') -> pydantic.HttpUrl:
+def s3_to_https(*, s3_url: pydantic.AnyUrl) -> pydantic.HttpUrl:
     # Split the URL into its components
     s3_parts = s3_url.split('/')
 
@@ -17,7 +17,7 @@ def s3_to_https(*, s3_url: pydantic.AnyUrl, region: str = 'us-west-2') -> pydant
     path = '/'.join(s3_parts[3:])
 
     # Return the HTTPS URL in the desired format
-    return f'https://{bucket_name}.s3.{region}.amazonaws.com/{path}'
+    return f'https://{bucket_name}.s3.amazonaws.com/{path}'
 
 
 def gs_to_https(*, gs_url: pydantic.AnyUrl) -> pydantic.HttpUrl:
@@ -94,5 +94,11 @@ def sanitize_url(url: pydantic.AnyUrl) -> SanitizedURL:
 
     elif parsed_url.scheme in {'s3', 'gs', 'az', 'abfs'}:
         bucket, key = parsed_url.netloc, parsed_url.path
+
+    if parsed_url.scheme == 'gs':
+        url = gs_to_https(gs_url=url)
+
+    elif parsed_url.scheme == 's3':
+        url = s3_to_https(s3_url=url)
 
     return SanitizedURL(url=str(url), protocol=parsed_url.scheme, key=key, bucket=bucket)
