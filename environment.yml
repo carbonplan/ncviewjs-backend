@@ -14,11 +14,11 @@ dependencies:
   - dictdiffer >= 0.9.0
   - fastapi>=0.87.0
   - fsspec >= 2022.11.0
-  - gcsfs
+  - gcsfs>=2022.11.0
   - gunicorn
   - psycopg2
   - python=3.10
-  - s3fs
+  - s3fs >= 2022.11.0
   - sqlmodel >= 0.0.8
   - universal_pathlib >=0.0.21
   - uvicorn
