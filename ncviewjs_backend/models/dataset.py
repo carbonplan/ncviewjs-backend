@@ -32,6 +32,9 @@ class DatasetBase(SQLModel):
     last_accessed: datetime.datetime | None = Field(
         default_factory=datetime.datetime.utcnow, nullable=True
     )
+    created: datetime.datetime | None = Field(
+        default_factory=datetime.datetime.utcnow, nullable=True
+    )
     size: str | None = None
 
 
