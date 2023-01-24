@@ -1,11 +1,9 @@
-import subprocess
 import traceback
 
 import dask.utils
 import xarray as xr
 from sqlmodel import Session
 
-from .config import get_settings
 from .logging import get_logger
 from .models.dataset import Dataset, RechunkRun
 
@@ -103,25 +101,28 @@ def validate_and_rechunk(*, dataset: Dataset, session: Session, rechunk_run: Rec
     validate_zarr_store(dataset.url)
     logger.info(f'Validation of store: {dataset.url} succeeded')
 
-    # Rechunk the dataset
-    settings = get_settings()
-    endpoint = (
-        'https://ncview-backend.fly.dev/runs'
-        if settings.environment == 'prod'
-        else 'http://localhost:8000/runs'
-    )
-    command = (
-        f"prefect deployment run rechunk/ncviewjs "
-        f"--param store_url={dataset.url} "
-        f"--param key={dataset.key} "
-        f"--param bucket={dataset.bucket} "
-        f"--param endpoint={endpoint} "
-        f"--param rechunk_run_id={rechunk_run.id}"
-    )
+    # NOTE: Rechunk the dataset: This is currently disabled because we are using the zarr proxy
+    # to serve the data. This will be re-enabled if and when we end up with
+    # some specific use cases for the persistent rechunking
 
-    output = subprocess.check_output(command, shell=True).decode('utf-8')
+    # settings = get_settings()
+    # endpoint = (
+    #     'https://ncview-backend.fly.dev/runs'
+    #     if settings.environment == 'prod'
+    #     else 'http://localhost:8000/runs'
+    # )
+    # command = (
+    #     f"prefect deployment run rechunk/ncviewjs "
+    #     f"--param store_url={dataset.url} "
+    #     f"--param key={dataset.key} "
+    #     f"--param bucket={dataset.bucket} "
+    #     f"--param endpoint={endpoint} "
+    #     f"--param rechunk_run_id={rechunk_run.id}"
+    # )
 
-    logger.info(f'Output of prefect deployment run: \n{output}')
+    # output = subprocess.check_output(command, shell=True).decode('utf-8')
+
+    # logger.info(f'Output of prefect deployment run: \n{output}')
     logger.info(f'Updating of dataset: {dataset} succeeded')
 
 
