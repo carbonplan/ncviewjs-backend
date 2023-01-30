@@ -7,8 +7,6 @@ from sqlmodel import Session
 from .logging import get_logger
 from .models.dataset import Dataset, RechunkRun
 
-DATASET_SIZE_THRESHOLD = 60e9
-
 logger = get_logger()
 
 
@@ -29,6 +27,8 @@ class UnableToOpenDatasetError(Exception):
 def validate_dataset_size(dataset: xr.Dataset) -> None:
     """Validate that the dataset is not too large to be processed"""
 
+    DATASET_SIZE_THRESHOLD = 60e9  # 60 GB
+
     if dataset.nbytes > DATASET_SIZE_THRESHOLD:
         dataset_size = dask.utils.format_bytes(dataset.nbytes)
         threshold_size = dask.utils.format_bytes(DATASET_SIZE_THRESHOLD)
@@ -42,7 +42,7 @@ def validate_zarr_store(url: str) -> None:
 
     try:
         with xr.open_dataset(url, engine='zarr', chunks={}, decode_cf=False) as ds:
-            validate_dataset_size(ds)
+            pass
         del ds
 
     except DatasetTooLargeError as exc:
