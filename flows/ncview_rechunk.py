@@ -28,7 +28,6 @@ def retrieve_CF_axes(ds: xr.Dataset) -> dict[str, dict[str, str]]:
 
 @prefect.task
 def initialize_skyplane():
-
     logger = prefect.get_run_logger()
     logger.info("Initializing skyplane...")
     subprocess.check_call(
@@ -143,7 +142,6 @@ def generate_stores(
     staging_bucket: pydantic.AnyUrl,
     production_bucket: pydantic.AnyUrl,
 ):
-
     # TODO: use a better naming scheme
     now = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H-%M-%S')
     store_suffix = f"{now}/{bucket}/{key}"

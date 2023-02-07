@@ -40,7 +40,6 @@ def register_dataset(
 
     # else, update the existing dataset
     if dataset_exists:
-
         # Rechunk run
         rechunk_run = RechunkRun(dataset_id=dataset.id, status="queued")
         session.add(rechunk_run)

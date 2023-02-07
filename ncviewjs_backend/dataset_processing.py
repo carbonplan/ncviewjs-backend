@@ -76,7 +76,6 @@ def process_dataset(*, dataset: Dataset, rechunk_run: RechunkRun, session: Sessi
     try:
         validate_and_rechunk(dataset=dataset, session=session, rechunk_run=rechunk_run)
     except Exception as exc:
-
         # update the rechunk run in the database
         rechunk_run.status = "completed"
         rechunk_run.outcome = "failure"
