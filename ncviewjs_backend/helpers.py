@@ -25,7 +25,6 @@ def gs_to_https(*, gs_url: pydantic.AnyUrl) -> pydantic.HttpUrl:
 
 
 def parse_s3_url(url: str) -> tuple[str, str]:
-
     bucket = None
     key = None
 
@@ -48,7 +47,6 @@ def parse_s3_url(url: str) -> tuple[str, str]:
 
 
 def parse_gs_url(url: str) -> tuple[str, str]:
-
     bucket = None
     key = None
 
@@ -59,7 +57,6 @@ def parse_gs_url(url: str) -> tuple[str, str]:
 
 
 def parse_az_url(url: str) -> tuple[str, str]:
-
     bucket = None
     key = None
 

@@ -33,7 +33,6 @@ def test_post_store(test_app_with_db, url, force):
 )
 @pytest.mark.parametrize("latest", [True, False])
 def test_get_dataset(test_app_with_db, url, latest):
-
     response = test_app_with_db.post(
         '/datasets/',
         content=json.dumps({"url": url}),
