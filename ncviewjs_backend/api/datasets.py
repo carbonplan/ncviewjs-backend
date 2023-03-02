@@ -111,6 +111,7 @@ def list_datasets(session: Session = Depends(get_session)):
 
 
 # add patch method to update dataset rechunking records in the database
+# TODO: this method should require authentication to prevent unauthorized users from updating the database
 @router.patch("/{id}", response_model=DatasetWithRechunkRuns, summary="Update a dataset by ID")
 def update_dataset_by_id(
     id: int,
