@@ -10,7 +10,7 @@ from ..database import get_session
 from ..dataset_processing import process_dataset
 from ..helpers import sanitize_url
 from ..logging import get_logger
-from ..models.dataset import Dataset, DatasetRead, DatasetWithRechunkRuns, RechunkRun
+from ..models.dataset import Dataset, DatasetRead, RechunkRun
 from ..schemas.dataset import StorePayload
 
 router = APIRouter()
@@ -78,7 +78,7 @@ def register_dataset(
     return dataset
 
 
-@router.get("/{id}", response_model=DatasetWithRechunkRuns, summary="Get a dataset by ID")
+@router.get("/{id}", response_model=DatasetRead, summary="Get a dataset by ID")
 def get_dataset_by_id(
     id: int,
     latest: bool = Query(
@@ -105,14 +105,14 @@ def get_dataset_by_id(
     return dataset
 
 
-@router.get("/", response_model=list[DatasetWithRechunkRuns])
+@router.get("/", response_model=list[DatasetRead])
 def list_datasets(session: Session = Depends(get_session)):
     return session.exec(select(Dataset)).all()
 
 
 # add patch method to update dataset rechunking records in the database
 # TODO: this method should require authentication to prevent unauthorized users from updating the database
-@router.patch("/{id}", response_model=DatasetWithRechunkRuns, summary="Update a dataset by ID")
+@router.patch("/{id}", response_model=DatasetRead, summary="Update a dataset by ID")
 def update_dataset_by_id(
     id: int,
     payload: dict[str, typing.Any],
