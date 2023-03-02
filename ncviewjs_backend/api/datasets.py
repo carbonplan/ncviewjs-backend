@@ -128,6 +128,9 @@ def update_dataset_by_id(
     if payload.get("rechunking") is not None:
         dataset.rechunking = payload["rechunking"]
 
+    if payload.get("cf_axes") is not None:
+        dataset.cf_axes = payload["cf_axes"]
+
     session.add(dataset)
     session.commit()
     session.refresh(dataset)

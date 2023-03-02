@@ -63,3 +63,22 @@ def test_get_dataset_not_found(test_app_with_db):
     assert response.status_code == 404
     data = response.json()
     assert "not found" in data["detail"]
+
+
+def test_patch_dataset(test_app_with_db):
+    url = urls[0]
+    response = test_app_with_db.post(
+        '/datasets/',
+        content=json.dumps({"url": url}),
+    )
+    data = response.json()
+    response = test_app_with_db.patch(
+        f"/datasets/{data['id']}",
+        content=json.dumps(
+            {"rechunking": [{"path": url, "use_case": "test"}], "cf_axes": {"lat": {"Y": "lat"}}}
+        ),
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["rechunking"] == [{"path": url, "use_case": "test"}]
+    assert data["cf_axes"] == {"lat": {"Y": "lat"}}
