@@ -22,6 +22,11 @@ class Outcome(str, enum.Enum):
     timed_out = "timed_out"
 
 
+class RechunkingRecord(pydantic.BaseModel):
+    path: pydantic.HttpUrl
+    use_case: str
+
+
 class DatasetBase(SQLModel):
     url: str
     md5_id: str
@@ -36,6 +41,9 @@ class DatasetBase(SQLModel):
         default_factory=datetime.datetime.utcnow, nullable=True
     )
     size: str | None = None
+    rechunking: list[RechunkingRecord] | None = Field(
+        default=[], sa_column=Column(JSON)
+    )  # align with geozarr spec
 
 
 class Dataset(DatasetBase, table=True):

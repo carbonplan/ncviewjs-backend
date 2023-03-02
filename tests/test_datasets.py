@@ -10,7 +10,18 @@ urls = [
     "gs://carbonplan-maps/ncview/demo/single_timestep/air_temperature.zarr",
 ]
 
-columns = {"id", "url", "bucket", "key", "protocol", "md5_id", "cf_axes", "last_accessed", "size"}
+columns = {
+    "id",
+    "url",
+    "bucket",
+    "key",
+    "protocol",
+    "md5_id",
+    "cf_axes",
+    "last_accessed",
+    "size",
+    "rechunking",
+}
 
 
 @pytest.mark.parametrize(
