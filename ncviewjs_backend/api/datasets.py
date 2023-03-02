@@ -1,5 +1,6 @@
 import contextlib
 import datetime
+import typing
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from sqlalchemy.orm.exc import NoResultFound
@@ -107,3 +108,27 @@ def get_dataset_by_id(
 @router.get("/", response_model=list[DatasetWithRechunkRuns])
 def list_datasets(session: Session = Depends(get_session)):
     return session.exec(select(Dataset)).all()
+
+
+# add patch method to update dataset rechunking records in the database
+@router.patch("/{id}", response_model=DatasetWithRechunkRuns, summary="Update a dataset by ID")
+def update_dataset_by_id(
+    id: int,
+    payload: dict[str, typing.Any],
+    session: Session = Depends(get_session),
+) -> Dataset:
+    """Update a dataset from the database."""
+    logger.info(f"Updating dataset: {id} with payload: {payload}")
+    dataset = session.get(Dataset, id)
+    if dataset is None:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+
+    # Update the dataset attributes if present in the request body
+    if payload.get("rechunking") is not None:
+        dataset.rechunking = payload["rechunking"]
+
+    session.add(dataset)
+    session.commit()
+    session.refresh(dataset)
+
+    return dataset
