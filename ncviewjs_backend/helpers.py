@@ -43,7 +43,11 @@ def parse_s3_url(url: str) -> tuple[str, str]:
     if match := re.search('^s3://([^.]+)(.*?)$', url):
         bucket, key = match[1], match[2]
 
-    return bucket, key
+    # https://bucket-name.s3.amazonaws.com/key-name
+    if match := re.search('^https?://([^.]+).s3.amazonaws.com(.*?)$', url):
+        bucket, key = match[1], match[2]
+
+    return bucket, key.strip('/')
 
 
 def parse_gs_url(url: str) -> tuple[str, str]:
