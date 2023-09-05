@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import datasets, ping, runs
+from .api import datasets, health, runs
 from .logging import get_logger
 
 logger = get_logger()
@@ -20,7 +20,7 @@ def create_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    application.include_router(ping.router, tags=["ping"])
+    application.include_router(health.router, tags=["health"], prefix='/health')
     application.include_router(datasets.router, tags=["datasets"], prefix="/datasets")
     application.include_router(runs.router, tags=["runs"], prefix="/runs")
     return application

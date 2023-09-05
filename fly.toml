@@ -44,7 +44,7 @@ grace_period = "1s"
 restart_limit = 0
 
 [[services.http_checks]]
-path = "/ping/"
+path = "/health/"
 grace_period = "15s"
 interval = "30s"
 timeout = "10s"
