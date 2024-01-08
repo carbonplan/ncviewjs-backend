@@ -7,18 +7,17 @@ kill_timeout = 5
 primary_region = "dfw"
 
 [build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = ["gcr.io/paketo-buildpacks/python"]
+builder = "paketobuildpacks/builder-jammy-full:latest"
+buildpacks = ["gcr.io/paketo-buildpacks/python"]
+
 
 [env]
-  ENVIRONMENT = "prod"
-  TESTING = "False"
-  PORT = "8000"
+ENVIRONMENT = "prod"
+TESTING = "False"
+PORT = "8000"
 
 [deploy]
-  release_command = "bash -l release.sh"
-
-
+release_command = "bash -l release.sh"
 
 
 [[services]]
