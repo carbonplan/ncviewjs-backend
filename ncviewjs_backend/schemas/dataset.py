@@ -4,20 +4,20 @@ import pydantic
 
 
 class StorePayload(pydantic.BaseModel):
-    url: pydantic.AnyUrl
+    url: str
     force: bool = False
 
 
 class SanitizedURL(pydantic.BaseModel):
-    url: pydantic.AnyUrl
+    url: str
     protocol: str
     bucket: str
     key: str
 
     @pydantic.root_validator
     def remove_slashes(cls, values: dict) -> dict:
-        for item in {'bucket', 'key', 'url'}:
-            values[item] = values[item].strip('/')
+        for item in {"bucket", "key", "url"}:
+            values[item] = values[item].strip("/")
 
         return values
 
