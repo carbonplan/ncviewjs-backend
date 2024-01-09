@@ -23,7 +23,7 @@ class Outcome(str, enum.Enum):
 
 
 class RechunkingRecord(pydantic.BaseModel):
-    path: pydantic.HttpUrl
+    path: str
     use_case: str
 
 
@@ -60,7 +60,7 @@ class RechunkRunBase(SQLModel):
     error_message_traceback: str | None
     status: Status = Status.queued
     outcome: Outcome | None = None
-    rechunked_dataset: pydantic.HttpUrl | None = None
+    rechunked_dataset: str | None = None
     start_time: datetime.datetime | None = None
     end_time: datetime.datetime | None = None
 
@@ -87,13 +87,13 @@ class DatasetWithRechunkRuns(DatasetRead):
 class RechunkRunPayload(pydantic.BaseModel):
     start_time: datetime.datetime | None
     end_time: datetime.datetime | None
-    rechunked_dataset: pydantic.HttpUrl | None
+    rechunked_dataset: str | None
     error_message: str | None
     error_message_traceback: str | None
     status: Status | None
     outcome: Outcome | None
 
-    @pydantic.root_validator(pre=True)
+    @pydantic.model_validator(mode='before')
     def update_dataset_url(cls, values) -> dict:
         from ..helpers import s3_to_https
 
