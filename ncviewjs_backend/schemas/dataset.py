@@ -14,7 +14,7 @@ class SanitizedURL(pydantic.BaseModel):
     bucket: str
     key: str
 
-    @pydantic.root_validator
+    @pydantic.model_validator(mode='before')
     def remove_slashes(cls, values: dict) -> dict:
         for item in {"bucket", "key", "url"}:
             values[item] = values[item].strip("/")
